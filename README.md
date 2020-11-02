@@ -1,0 +1,2 @@
+# swid
+Software Identification Tags
