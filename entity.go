@@ -56,7 +56,7 @@ type Entity struct {
 	Thumbprint *HashEntry `cbor:"34,keyasint,omitempty" json:"thumbprint,omitempty" xml:"thumbprint,omitempty"`
 }
 
-// NewEntity instantiates a new Entity object initialised with the given
+// NewEntity instantiates a new Entity object initialized with the given
 // entityName and roles
 func NewEntity(entityName string, roles ...interface{}) (*Entity, error) {
 	e := Entity{

@@ -151,35 +151,35 @@ func NewTag(tagID interface{}, softwareName, softwareVersion string) (*SoftwareI
 	return &t, nil
 }
 
-// ToXML serialises the receiver SoftwareIdentity to SWID
+// ToXML serializes the receiver SoftwareIdentity to SWID
 func (t SoftwareIdentity) ToXML() ([]byte, error) {
 	return xml.Marshal(t)
 }
 
-// ToJSON serialises the receiver SoftwareIdentity to CoSWID using the JSON
+// ToJSON serializes the receiver SoftwareIdentity to CoSWID using the JSON
 // formatter
 func (t SoftwareIdentity) ToJSON() ([]byte, error) {
 	return json.Marshal(t)
 }
 
-// ToCBOR serialises the receiver SoftwareIdentity to CoSWID
+// ToCBOR serializes the receiver SoftwareIdentity to CoSWID
 func (t SoftwareIdentity) ToCBOR() ([]byte, error) {
 	return em.Marshal(t)
 }
 
-// FromXML deserialises the supplied XML encoded SWID into the receiver
+// FromXML deserializes the supplied XML encoded SWID into the receiver
 // SoftwareIdentity
 func (t *SoftwareIdentity) FromXML(data []byte) error {
 	return xml.Unmarshal(data, t)
 }
 
-// FromJSON deserialises the supplied JSON encoded CoSWID into the receiver
+// FromJSON deserializes the supplied JSON encoded CoSWID into the receiver
 // SoftwareIdentity
 func (t *SoftwareIdentity) FromJSON(data []byte) error {
 	return json.Unmarshal(data, t)
 }
 
-// FromCBOR deserialises the supplied CBOR encoded CoSWID into the receiver
+// FromCBOR deserializes the supplied CBOR encoded CoSWID into the receiver
 // SoftwareIdentity
 func (t *SoftwareIdentity) FromCBOR(data []byte) error {
 	return dm.Unmarshal(data, t)

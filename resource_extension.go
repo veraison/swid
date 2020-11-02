@@ -20,7 +20,7 @@ type PSAMeasuredSoftwareComponent struct {
 }
 
 // NewPSAMeasuredSoftwareComponentResource returns a Resource of type
-// PSAMeasuredSoftwareComponent initialised according to the supplied
+// PSAMeasuredSoftwareComponent initialized according to the supplied
 // measurement value and signer ID
 func NewPSAMeasuredSoftwareComponentResource(
 	measurementValue HashEntry, signerID HashEntry,

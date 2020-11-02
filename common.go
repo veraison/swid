@@ -77,7 +77,7 @@ func codeStringer(code interface{}, dict codeDictionary, codeName string) string
 func codeToCBOR(code interface{}, dict stringDictionary) ([]byte, error) {
 	v := code
 
-	// always try to minimise bandwidth
+	// always try to minimize bandwidth
 	if err := codifyString(&v, dict); err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func codeToCBOR(code interface{}, dict stringDictionary) ([]byte, error) {
 func codeToJSON(code interface{}, dict codeDictionary) ([]byte, error) {
 	v := code // make a copy we can clobber
 
-	// always try to maximise expressiveness
+	// always try to maximize expressiveness
 	// however, avoid encoding unknown codes
 	if err := stringifyCode(&v, dict, ""); err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func codeToJSON(code interface{}, dict codeDictionary) ([]byte, error) {
 func codeToXMLAttr(attrName xml.Name, code interface{}, dict codeDictionary) (xml.Attr, error) {
 	v := code // make a copy we can clobber
 
-	// always try to maximise expressiveness
+	// always try to maximize expressiveness
 	// however, avoid encoding unknown codes
 	if err := stringifyCode(&v, dict, ""); err != nil {
 		return xml.Attr{}, err
@@ -116,7 +116,7 @@ func xToCode(enc encoder, from []byte, dict stringDictionary, to *interface{}) e
 		return err
 	}
 
-	// try to make internal representation as homogeneus as possible
+	// try to make internal representation as homogeneous as possible
 	if err := codifyString(to, dict); err != nil {
 		return err
 	}

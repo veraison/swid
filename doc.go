@@ -4,7 +4,7 @@ Identification (SWID) Tags as defined by ISO/IEC 19770-2:2015 as well as by
 their "concise" counterpart (CoSWID) defined by draft-ietf-sacm-coswid.
 
 The library aims at using the most space-efficient encoding when using CBOR
-and the most expressive one when using XML and JSON, preferring to serialise
+and the most expressive one when using XML and JSON, preferring to serialize
 strings rather tham of their equivalent code-points. When decoding, the most
 space efficient representation is used. In dealing with unknown code-points,
 we follow the Postel principle: refusing to encode unknown protocol entities,
@@ -26,7 +26,7 @@ This will generate a Tag with a minimal structure. You can then use the API
 to add additional information and meta data to the tag.
 
 You will need to add one or more "entity" entries, representing the
-organisation(s) responsible for the information contained in the tag.
+organization(s) responsible for the information contained in the tag.
 All entities have an associated "role" and a recommended "registration id":
 
 	entity, err := NewEntity(
@@ -76,7 +76,7 @@ And subsequently added to the tag's "payload":
 Note that the same data structures could be added to an "evidence" instead,
 were the tag describing a "live" system rather than a software package.
 
-Once the tag is complete, it can be serialised using one of the CBOR, XML or
+Once the tag is complete, it can be serialized using one of the CBOR, XML or
 JSON marshalers:
 
 	data, err := tag.ToXML() // or tag.ToCBOR(), or tag.ToJSON()
@@ -84,7 +84,7 @@ JSON marshalers:
 
 Consuming Tags
 
-A tag can be de-serialised using one of the "From" interfaces. For example,
+A tag can be de-serialized using one of the "From" interfaces. For example,
 to decode a CoSWID tag from a memory buffer:
 
 	var tag SoftwareIdentity

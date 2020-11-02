@@ -105,7 +105,7 @@ type Link struct {
 	Use *Use `cbor:"42,keyasint,omitempty" json:"use,omitempty" xml:"use,attr,omitempty"`
 }
 
-// NewLink instantiates a new Link object initialised with the supplied href and
+// NewLink instantiates a new Link object initialized with the supplied href and
 // link relation
 func NewLink(href string, rel Rel) (*Link, error) {
 	l := Link{

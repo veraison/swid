@@ -18,7 +18,7 @@ type Evidence struct {
 	DeviceID string `cbor:"36,keyasint,omitempty" json:"device-id,omitempty" xml:"deviceId,attr,omitempty"`
 }
 
-// NewEvidence instantiates a new Evidence object initialised with the given
+// NewEvidence instantiates a new Evidence object initialized with the given
 // deviceID
 func NewEvidence(deviceID string) *Evidence {
 	return &Evidence{

@@ -26,7 +26,6 @@ linters-settings:
   gofmt:
     simplify: false    
   goimports:
-    local-prefixes: github.com/fxamacker/cbor
   golint:
     min-confidence: 0
   govet:

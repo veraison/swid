@@ -88,7 +88,7 @@ func TestProcesses_UnmarshalCBOR(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "accept array with one element (non optimised)",
+			name: "accept array with one element (non optimized)",
 			/*
 			   81          # array(1)
 			      a1       # map(1)
@@ -128,7 +128,7 @@ func TestProcesses_UnmarshalCBOR(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			name: "one scalar element (optimised encoding)",
+			name: "one scalar element (optimized encoding)",
 			/*
 			   a1       # map(1)
 			      18 1b # unsigned(27)
@@ -162,7 +162,7 @@ func benchmarkProcessesMarshal(i int, b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 		if _, e := ps.MarshalCBOR(); e != nil {
-			b.Fatalf("marshalling failed: %v", e)
+			b.Fatalf("marshaling failed: %v", e)
 		}
 	}
 }

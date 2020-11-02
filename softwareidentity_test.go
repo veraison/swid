@@ -1,14 +1,18 @@
 package swid
 
-import "testing"
+import (
+	"testing"
 
-func makeACMEEntityWithRoles(roles ...interface{}) Entity {
+	"github.com/stretchr/testify/require"
+)
+
+func makeACMEEntityWithRoles(t *testing.T, roles ...interface{}) Entity {
 	e := Entity{
 		EntityName: "ACME Ltd",
 		RegID:      "acme.example",
 	}
 
-	e.SetRoles(roles...)
+	require.Nil(t, e.SetRoles(roles...))
 
 	return e
 }
@@ -19,7 +23,7 @@ func TestTag_RoundtripPSABundle(t *testing.T) {
 		SoftwareName:    "Roadrunner software bundle",
 		SoftwareVersion: "1.0.0",
 		Entities: Entities{
-			makeACMEEntityWithRoles(
+			makeACMEEntityWithRoles(t,
 				RoleTagCreator,
 				RoleSoftwareCreator,
 				RoleAggregator,
@@ -136,7 +140,7 @@ func TestTag_RoundtripPSAComponent(t *testing.T) {
 		SoftwareName:    "Roadrunner boot loader",
 		SoftwareVersion: "1.0.0",
 		Entities: Entities{
-			makeACMEEntityWithRoles(
+			makeACMEEntityWithRoles(t,
 				RoleTagCreator,
 				RoleAggregator,
 			),
