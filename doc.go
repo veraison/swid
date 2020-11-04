@@ -1,3 +1,6 @@
+// Copyright 2020 Contributors to the Veraison project.
+// SPDX-License-Identifier: Apache-2.0
+
 /*
 Package swid provides an API for creating and interacting with Software
 Identification (SWID) Tags as defined by ISO/IEC 19770-2:2015 as well as by
