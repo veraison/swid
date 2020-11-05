@@ -3,9 +3,13 @@
 Contributions to this project are welcomed. We request that you read through
 the guidelines before getting started.
 
+## Contributor License Agreement
+
+Your contribution is accepted under the [Apache 2.0 license](LICENSE).
+
 ## Community guidelines
 
-Get acquainted with [CONTRIBUTING.md](CONTRIBUTING.md) that contains our
+Get acquainted with our [code of conduct](CODE_OF_CONDUCT.md) that contains our
 community guidelines.
 
 ## Contribution
@@ -43,7 +47,8 @@ $ go test ./...
 
 ### Presubmit checks
 
-TODO we probably should have a `scripts/presubmit.sh` which mirrors the CI tests:
+TODO(tho) we probably should have a `scripts/presubmit.sh` which mirrors the
+CI tests:
 * Linters, and
 * Code coverage
 
