@@ -1,6 +1,6 @@
 # Veraison components - contribution guidelines
 
-Contributions to this project are welcomed. We request that you read through
+Contributions to this project are welcome. We request that you read through
 the guidelines before getting started.
 
 ## Contributor License Agreement
@@ -47,10 +47,9 @@ $ go test ./...
 
 ### Presubmit checks
 
-TODO(tho) we probably should have a `scripts/presubmit.sh` which mirrors the
-CI tests:
-* Linters, and
-* Code coverage
+TODO(tho) a `scripts/presubmit.sh` which mirrors the CI tests, i.e., linters
+and code coverage that can be used before submitting the PR to minimize
+roundtrips.
 
 ## Documentation
 
