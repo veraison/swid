@@ -6,6 +6,7 @@ package swid
 import (
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 )
 
 // SoftwareIdentity represents the top-level SWID
@@ -189,12 +190,12 @@ func (t *SoftwareIdentity) FromCBOR(data []byte) error {
 }
 
 func (t *SoftwareIdentity) setTagID(v interface{}) error {
-	tagID, err := checkTagID(v)
-	if err != nil {
-		return err
+	tagID := NewTagID(v)
+	if tagID == nil {
+		return errors.New("bad type for TagID: expecting string or [16]byte")
 	}
 
-	t.TagID = tagID
+	t.TagID = *tagID
 
 	return nil
 }
