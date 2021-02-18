@@ -18,16 +18,16 @@ func Example_useAPIToBuildPSAEndorsementSoftwareBundle() {
 	_ = tag.AddEntity(*entity)
 
 	// make links and append them to tag
-	link, _ := NewLink("example.acme.roadrunner-hw-v1-0-0", Rel{"psa-rot-compound"})
+	link, _ := NewLink("example.acme.roadrunner-hw-v1-0-0", *NewRel("psa-rot-compound"))
 	_ = tag.AddLink(*link)
 
-	link, _ = NewLink("example.acme.roadrunner-sw-bl-v1-0-0", Rel{RelComponent})
+	link, _ = NewLink("example.acme.roadrunner-sw-bl-v1-0-0", *NewRel(RelComponent))
 	_ = tag.AddLink(*link)
 
-	link, _ = NewLink("example.acme.roadrunner-sw-prot-v1-0-0", Rel{RelComponent})
+	link, _ = NewLink("example.acme.roadrunner-sw-prot-v1-0-0", *NewRel(RelComponent))
 	_ = tag.AddLink(*link)
 
-	link, _ = NewLink("example.acme.roadrunner-sw-arot-v1-0-0", Rel{RelComponent})
+	link, _ = NewLink("example.acme.roadrunner-sw-arot-v1-0-0", *NewRel(RelComponent))
 	_ = tag.AddLink(*link)
 
 	// encode tag to JSON
@@ -71,7 +71,7 @@ func Example_useAPIToBuildPSAEndorsementSoftwareComponent() {
 	_ = tag.AddPayload(*payload)
 
 	// make link to the HW RoT
-	link, _ := NewLink("example.acme.roadrunner-hw-v1-0-0", Rel{"psa-rot-compound"})
+	link, _ := NewLink("example.acme.roadrunner-hw-v1-0-0", *NewRel("psa-rot-compound"))
 	_ = tag.AddLink(*link)
 
 	// encode tag to JSON
@@ -102,7 +102,7 @@ func Example_completePrimaryTag() {
 	_ = entity.SetRegID("mycoyote.com")
 	_ = tag.AddEntity(*entity)
 
-	link, _ := NewLink("www.gnu.org/licenses/gpl.txt", Rel{"license"})
+	link, _ := NewLink("www.gnu.org/licenses/gpl.txt", *NewRel("license"))
 	_ = tag.AddLink(*link)
 
 	meta := SoftwareMeta{
