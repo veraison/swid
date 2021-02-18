@@ -22,7 +22,7 @@ func makeACMEEntityWithRoles(t *testing.T, roles ...interface{}) Entity {
 
 func TestTag_RoundtripPSABundle(t *testing.T) {
 	tv := SoftwareIdentity{
-		TagID:           TagID("example.acme.roadrunner-sw-v1-0-0"),
+		TagID:           *NewTagID("example.acme.roadrunner-sw-v1-0-0"),
 		SoftwareName:    "Roadrunner software bundle",
 		SoftwareVersion: "1.0.0",
 		Entities: Entities{
@@ -139,7 +139,7 @@ func TestTag_RoundtripPSABundle(t *testing.T) {
 
 func TestTag_RoundtripPSAComponent(t *testing.T) {
 	tv := SoftwareIdentity{
-		TagID:           TagID("example.acme.roadrunner-sw-bl-v1-0-0"),
+		TagID:           *NewTagID("example.acme.roadrunner-sw-bl-v1-0-0"),
 		SoftwareName:    "Roadrunner boot loader",
 		SoftwareVersion: "1.0.0",
 		Entities: Entities{
