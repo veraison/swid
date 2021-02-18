@@ -84,6 +84,14 @@ var (
 	}
 )
 
+// NewRel returns a Rel initialized with the supplied value v
+func NewRel(v interface{}) *Rel {
+	if isStringOrCode(v, "rel") != nil {
+		return nil
+	}
+	return &Rel{v}
+}
+
 // String returns the value of the Rel receiver as a string
 func (r Rel) String() string {
 	return codeStringer(r.val, relToString, "rel")
