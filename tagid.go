@@ -4,105 +4,125 @@
 package swid
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
 
 	"github.com/fxamacker/cbor/v2"
+	"github.com/google/uuid"
 )
 
-// TagID is the type of a tag identifier. Allowed formats (enforced via
-// checkTagID) are string or [16]byte
+// TagID is the type of a tag identifier. Allowed formats are string or
+// a valid universally unique identifier (UUID) as defined by RFC4122.
 type TagID struct {
 	val interface{}
 }
 
-// NewTagID returns a TagID initialized with the supplied value v
-// v is either a string or a [16]byte
 func NewTagID(v interface{}) *TagID {
-	if checkTagID(v) != nil {
+	switch t := v.(type) {
+	case string:
+		tagID, _ := string2TagID(t)
+		return tagID
+	case []byte:
+		tagID, _ := NewTagIDFromUUIDBytes(t)
+		return tagID
+	default:
 		return nil
 	}
-	return &TagID{v}
 }
 
-// String returns the value of the TagID as string. If the TagID has type
-// [16]byte the Base 16 encoding is returned
+func string2TagID(s string) (*TagID, error) {
+	if tagID, err := NewTagIDFromUUIDString(s); err == nil {
+		return tagID, nil
+	}
+
+	if tagID, err := NewTagIDFromString(s); err == nil {
+		return tagID, nil
+	}
+
+	return nil, errors.New("tag-id is neither a UUID nor a valid string")
+}
+
+func NewTagIDFromString(s string) (*TagID, error) {
+	if s == "" {
+		return nil, errors.New("empty string")
+	}
+	return &TagID{s}, nil
+}
+
+func NewTagIDFromUUIDString(s string) (*TagID, error) {
+	u, err := uuid.Parse(s)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TagID{u}, nil
+}
+
+func NewTagIDFromUUIDBytes(b []byte) (*TagID, error) {
+	u, err := uuid.FromBytes(b)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TagID{u}, nil
+}
+
+// String returns the value of the TagID as string. If the TagID has type UUID,
+// the string form of uuid, xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, is returned
 func (t TagID) String() string {
 	switch v := t.val.(type) {
 	case string:
 		return v
-	case []byte:
-		return hex.EncodeToString(v)
+	case uuid.UUID:
+		return v.String()
 	default:
 		return "unknown type for tag-id"
 	}
 }
 
-func checkTagID(v interface{}) error {
-	switch t := v.(type) {
-	case string:
-	case []byte:
-		if len(t) != 16 {
-			return errors.New("binary tag-id MUST be 16 bytes")
-		}
-	default:
-		return fmt.Errorf("tag-id MUST be []byte or string; got %T", v)
-	}
-
-	return nil
-}
-
-func (t TagID) isString() bool {
-	switch t.val.(type) {
-	case string:
-		return true
-	}
-	return false
-}
-
 // MarshalXMLAttr encodes the TagID receiver as XML attribute
 func (t TagID) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	if !t.isString() {
-		return xml.Attr{}, errors.New("only tag-id of type string can be serialized to XML")
-	}
 	return xml.Attr{Name: name, Value: t.String()}, nil
 }
 
 // UnmarshalXMLAttr decodes the supplied XML attribute into a TagID
 // Note that this can only unmarshal to string.
 func (t *TagID) UnmarshalXMLAttr(attr xml.Attr) error {
-	t.val = attr.Value
+	tagID, err := string2TagID(attr.Value)
+	if err != nil {
+		return fmt.Errorf("error unmarshaling tag-id %q: %w", attr.Value, err)
+	}
+
+	*t = *tagID
+
 	return nil
 }
 
 // MarshalJSON encodes the TagID receiver as JSON string
 func (t TagID) MarshalJSON() ([]byte, error) {
-	if !t.isString() {
-		return nil, errors.New("only tag-id of type string can be serialized to JSON")
-	}
-
-	return json.Marshal(t.val)
+	return json.Marshal(t.String())
 }
 
-// UnmarshalJSON decodes the supplied JSON data into a TagID
-// Note that this can only unmarshal to string.
+// UnmarshalJSON decodes the supplied JSON data into a TagID.  If TagID is of
+// type UUID, the string form, xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, is
+// expected.
 func (t *TagID) UnmarshalJSON(data []byte) error {
-	var v interface{}
+	var s string
 
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
+	if err := json.Unmarshal(data, &s); err != nil {
+		return fmt.Errorf("error unmarshaling tag-id: %w", err)
 	}
 
-	switch s := v.(type) {
-	case string:
-		t.val = s
-		return nil
-	default:
-		return fmt.Errorf("expecting string, found %T instead", s)
+	tagID, err := string2TagID(s)
+	if err != nil {
+		return fmt.Errorf("error unmarshaling tag-id %q: %w", s, err)
 	}
+
+	*t = *tagID
+
+	return nil
 }
 
 // MarshalCBOR encodes the TagID receiver to CBOR
@@ -112,17 +132,30 @@ func (t TagID) MarshalCBOR() ([]byte, error) {
 
 // UnmarshalCBOR decodes the supplied data into a TagID
 func (t *TagID) UnmarshalCBOR(data []byte) error {
-	var v interface{}
+	var (
+		v     interface{}
+		err   error
+		tagID *TagID
+	)
 
-	if err := cbor.Unmarshal(data, &v); err != nil {
+	if err = cbor.Unmarshal(data, &v); err != nil {
 		return err
 	}
 
-	if err := checkTagID(v); err != nil {
-		return err
+	switch typ := v.(type) {
+	case string:
+		tagID, err = NewTagIDFromString(typ)
+	case []byte:
+		tagID, err = NewTagIDFromUUIDBytes(typ)
+	default:
+		tagID, err = nil, fmt.Errorf("tag-id MUST be []byte or string; got %T", typ)
 	}
 
-	t.val = v
+	if err != nil {
+		return fmt.Errorf("error unmarshaling tag-id: %w", err)
+	}
+
+	*t = *tagID
 
 	return nil
 }
