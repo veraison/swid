@@ -101,6 +101,8 @@ func (h *HashEntry) Set(algID uint64, value []byte) error {
 	return nil
 }
 
+// ValidHashEntry checks whether the supplied algorithm identifier and hash
+// value are a coherent pair
 func ValidHashEntry(algID uint64, value []byte) error {
 	wantLen, ok := algToValueLen[algID]
 	if !ok {
