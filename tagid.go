@@ -19,6 +19,8 @@ type TagID struct {
 	val interface{}
 }
 
+// NewTagID takes a UUID (either as in string form or byte array) or an untyped
+// string and returns a TagID
 func NewTagID(v interface{}) *TagID {
 	switch t := v.(type) {
 	case string:
@@ -44,6 +46,7 @@ func string2TagID(s string) (*TagID, error) {
 	return nil, errors.New("tag-id is neither a UUID nor a valid string")
 }
 
+// NewTagIDFromString takes an untyped string and returns a TagID
 func NewTagIDFromString(s string) (*TagID, error) {
 	if s == "" {
 		return nil, errors.New("empty string")
@@ -51,6 +54,7 @@ func NewTagIDFromString(s string) (*TagID, error) {
 	return &TagID{s}, nil
 }
 
+// NewTagIDFromUUIDString takes an UUID in string form and returns a TagID
 func NewTagIDFromUUIDString(s string) (*TagID, error) {
 	u, err := uuid.Parse(s)
 	if err != nil {
@@ -60,6 +64,7 @@ func NewTagIDFromUUIDString(s string) (*TagID, error) {
 	return &TagID{u}, nil
 }
 
+// NewTagIDFromUUIDBytes takes an UUID as byte array and returns a TagID
 func NewTagIDFromUUIDBytes(b []byte) (*TagID, error) {
 	u, err := uuid.FromBytes(b)
 	if err != nil {
