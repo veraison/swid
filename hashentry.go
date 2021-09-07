@@ -28,56 +28,96 @@ type HashEntry struct {
 // Named Information Hash Algorithm Registry
 // https://www.iana.org/assignments/named-information/named-information.xhtml#hash-alg
 const (
-	sha256 = uint64(iota + 1)
-	sha256_128
-	sha256_120
-	sha256_96
-	sha256_64
-	sha256_32
-	sha384
-	sha512
-	sha3_224
-	sha3_256
-	sha3_384
-	sha3_512
+	Sha256 uint64 = (iota + 1)
+	Sha256_128
+	Sha256_120
+	Sha256_96
+	Sha256_64
+	Sha256_32
+	Sha384
+	Sha512
+	Sha3_224
+	Sha3_256
+	Sha3_384
+	Sha3_512
 )
 
 var (
+	algToValueLen = map[uint64]int{
+		Sha256:     32,
+		Sha256_128: 16,
+		Sha256_120: 15,
+		Sha256_96:  12,
+		Sha256_64:  8,
+		Sha256_32:  4,
+		Sha384:     48,
+		Sha512:     64,
+		Sha3_224:   28,
+		Sha3_256:   32,
+		Sha3_384:   48,
+		Sha3_512:   64,
+	}
+
 	algToString = map[uint64]string{
-		sha256:     "sha-256",
-		sha256_128: "sha-256-128",
-		sha256_120: "sha-256-120",
-		sha256_96:  "sha-256-96",
-		sha256_64:  "sha-256-64",
-		sha256_32:  "sha-256-32",
-		sha384:     "sha-384",
-		sha512:     "sha-512",
-		sha3_224:   "sha3-224",
-		sha3_256:   "sha3-256",
-		sha3_384:   "sha3-384",
-		sha3_512:   "sha3-512",
+		Sha256:     "sha-256",
+		Sha256_128: "sha-256-128",
+		Sha256_120: "sha-256-120",
+		Sha256_96:  "sha-256-96",
+		Sha256_64:  "sha-256-64",
+		Sha256_32:  "sha-256-32",
+		Sha384:     "sha-384",
+		Sha512:     "sha-512",
+		Sha3_224:   "sha3-224",
+		Sha3_256:   "sha3-256",
+		Sha3_384:   "sha3-384",
+		Sha3_512:   "sha3-512",
 	}
 
 	stringToAlg = map[string]uint64{
-		"sha-256":     sha256,
-		"sha-256-128": sha256_128,
-		"sha-256-120": sha256_120,
-		"sha-256-96":  sha256_96,
-		"sha-256-64":  sha256_64,
-		"sha-256-32":  sha256_32,
-		"sha-384":     sha384,
-		"sha-512":     sha512,
-		"sha3-224":    sha3_224,
-		"sha3-256":    sha3_256,
-		"sha3-384":    sha3_384,
-		"sha3-512":    sha3_512,
+		"sha-256":     Sha256,
+		"sha-256-128": Sha256_128,
+		"sha-256-120": Sha256_120,
+		"sha-256-96":  Sha256_96,
+		"sha-256-64":  Sha256_64,
+		"sha-256-32":  Sha256_32,
+		"sha-384":     Sha384,
+		"sha-512":     Sha512,
+		"sha3-224":    Sha3_224,
+		"sha3-256":    Sha3_256,
+		"sha3-384":    Sha3_384,
+		"sha3-512":    Sha3_512,
 	}
 )
 
 // Set assigns the supplied algID and hash value to the HashEntry receiver
 func (h *HashEntry) Set(algID uint64, value []byte) error {
+	if err := ValidHashEntry(algID, value); err != nil {
+		return err
+	}
+
 	h.HashAlgID = algID
 	h.HashValue = value
+
+	return nil
+}
+
+// ValidHashEntry checks whether the supplied algorithm identifier and hash
+// value are a coherent pair
+func ValidHashEntry(algID uint64, value []byte) error {
+	wantLen, ok := algToValueLen[algID]
+	if !ok {
+		return fmt.Errorf("unknown hash algorithm %d", algID)
+	}
+
+	gotLen := len(value)
+
+	if wantLen != gotLen {
+		return fmt.Errorf(
+			"length mismatch for hash algorithm %s: want %d bytes, got %d",
+			algToString[algID], wantLen, gotLen,
+		)
+	}
+
 	return nil
 }
 
