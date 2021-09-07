@@ -5,3 +5,11 @@ The `swid` package provides a golang API for manipulating Software Identificatio
 ## Resources
 
 * [Package Documentation](https://pkg.go.dev/github.com/veraison/swid)
+
+## Developer tips
+
+Before doing a PR (and routinely during the dev/test cycle) run
+```
+make presubmit
+```
+and check its output to make sure your code coverage figures are in line with the target and that there are no newly introduced lint problems.
