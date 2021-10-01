@@ -5,6 +5,7 @@ package swid
 
 import (
 	"encoding/xml"
+	"fmt"
 )
 
 // VersionScheme models the version-scheme type.
@@ -97,4 +98,13 @@ func (vs VersionScheme) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 // code-point if possible, otherwise as string
 func (vs *VersionScheme) UnmarshalXMLAttr(attr xml.Attr) error {
 	return xmlAttrToCode(attr, stringToVersionScheme, &vs.val)
+}
+
+func (vs *VersionScheme) SetCode(v uint64) error {
+	if _, ok := versionSchemeToString[v]; ok {
+		vs.val = v
+		return nil
+	}
+
+	return fmt.Errorf("unknown version scheme %d", v)
 }
