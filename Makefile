@@ -42,11 +42,15 @@ presubmit:
 	@echo
 	$(MAKE) lint
 
+.PHONY: licenses
+licenses: ; @./scripts/licenses.sh
+
 .PHONY: help
 help:
 	@echo "Available targets:"
 	@echo "  * test:       run unit tests for $(GOPKG)"
 	@echo "  * test-cover: run unit tests and measure coverage for $(GOPKG)"
+	@echo "  * licenses:   check licenses of dependent packages"
 	@echo "  * lint:       lint sources using default configuration"
 	@echo "  * lint-extra: lint sources using default configuration and some extra checkers"
 	@echo "  * presubmit:  check you are ready to push your local branch to remote"
