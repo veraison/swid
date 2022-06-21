@@ -19,8 +19,8 @@ type TagID struct {
 	val interface{}
 }
 
-// NewTagID takes a UUID (either as in string form, byte array or google.uuid.UUID) or an untyped
-// string and returns a TagID
+// NewTagID takes a UUID as either a string, byte array or google.uuid.UUID
+// and returns a TagID
 func NewTagID(v interface{}) *TagID {
 	switch t := v.(type) {
 	case string:
