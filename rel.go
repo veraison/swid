@@ -24,7 +24,7 @@ type Rel struct {
    $rel /= see-also
    $rel /= supersedes
    $rel /= supplemental
-   $rel /= uint / text
+   $rel /= int / text
    ancestor=1
    component=2
    feature=3
@@ -40,7 +40,7 @@ type Rel struct {
 
 // Rel constants
 const (
-	RelAncestor = uint64(iota + 1)
+	RelAncestor = int64(iota + 1)
 	RelComponent
 	RelFeature
 	RelInstallationMedia
@@ -51,11 +51,11 @@ const (
 	RelSeeAlso
 	RelSupersedes
 	RelSupplemental
-	RelUnknown = ^uint64(0)
+	RelUnknown = ^int64(0)
 )
 
 var (
-	relToString = map[uint64]string{
+	relToString = map[int64]string{
 		RelAncestor:          "ancestor",
 		RelComponent:         "component",
 		RelFeature:           "feature",
@@ -69,7 +69,7 @@ var (
 		RelSupplemental:      "supplemental",
 	}
 
-	stringToRel = map[string]uint64{
+	stringToRel = map[string]int64{
 		"ancestor":           RelAncestor,
 		"component":          RelComponent,
 		"feature":            RelFeature,

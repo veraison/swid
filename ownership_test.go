@@ -21,7 +21,7 @@ func TestOwnership_String(t *testing.T) {
 	o = Ownership{OwnershipAbandon}
 	assert.Equal(t, "abandon", o.String())
 
-	o = Ownership{uint64(100)}
+	o = Ownership{int64(100)}
 	assert.Equal(t, "ownership(100)", o.String())
 
 	o = Ownership{"ozymandias"}
@@ -43,12 +43,12 @@ func TestOwnership_Check(t *testing.T) {
 	o = Ownership{OwnershipAbandon}
 	assert.Nil(t, o.Check())
 
-	o = Ownership{uint64(100)}
+	o = Ownership{int64(100)}
 	assert.Nil(t, o.Check())
 
 	o = Ownership{"ozymandias"}
 	assert.Nil(t, o.Check())
 
 	o = Ownership{map[string]string{"hey": "duggie"}}
-	assert.EqualError(t, o.Check(), "ownership MUST be uint64 or string; got map[string]string")
+	assert.EqualError(t, o.Check(), "ownership MUST be int64 or string; got map[string]string")
 }

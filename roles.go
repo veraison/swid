@@ -27,7 +27,7 @@ type Roles struct {
    $role /= distributor
    $role /= licensor
    $role /= maintainer
-   $role /= uint / text
+   $role /= int / text
    tag-creator=1
    software-creator=2
    aggregator=3
@@ -38,17 +38,17 @@ type Roles struct {
 
 // Role constants
 const (
-	RoleTagCreator = uint64(iota + 1)
+	RoleTagCreator = int64(iota + 1)
 	RoleSoftwareCreator
 	RoleAggregator
 	RoleDistributor
 	RoleLicensor
 	RoleMaintainer
-	RoleUnknown = ^uint64(0)
+	RoleUnknown = ^int64(0)
 )
 
 var (
-	roleToString = map[uint64]string{
+	roleToString = map[int64]string{
 		RoleTagCreator:      "tagCreator",
 		RoleSoftwareCreator: "softwareCreator",
 		RoleAggregator:      "aggregator",
@@ -57,7 +57,7 @@ var (
 		RoleMaintainer:      "maintainer",
 	}
 
-	stringToRole = map[string]uint64{
+	stringToRole = map[string]int64{
 		"tagCreator":      RoleTagCreator,
 		"softwareCreator": RoleSoftwareCreator,
 		"aggregator":      RoleAggregator,

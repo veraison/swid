@@ -148,22 +148,20 @@ func TestTag_RoundtripPSAComponent(t *testing.T) {
 				RoleAggregator,
 			),
 		},
-		Payloads: &Payloads{
-			Payload{
-				ResourceCollection: ResourceCollection{
-					Resources: &Resources{
-						Resource{
-							Type: ResourceTypePSAMeasuredSoftwareComponent,
-							ResourceExtension: ResourceExtension{
-								PSAMeasuredSoftwareComponent{
-									MeasurementValue: HashEntry{
-										HashAlgID: 1, // sha-256
-										HashValue: []byte("aabb...eeff"),
-									},
-									SignerID: HashEntry{
-										HashAlgID: 1, // sha-256
-										HashValue: []byte("5192...1234"),
-									},
+		Payload: &Payload{
+			ResourceCollection: ResourceCollection{
+				Resources: &Resources{
+					Resource{
+						Type: ResourceTypePSAMeasuredSoftwareComponent,
+						ResourceExtension: ResourceExtension{
+							PSAMeasuredSoftwareComponent{
+								MeasurementValue: HashEntry{
+									HashAlgID: 1, // sha-256
+									HashValue: []byte("aabb...eeff"),
+								},
+								SignerID: HashEntry{
+									HashAlgID: 1, // sha-256
+									HashValue: []byte("5192...1234"),
 								},
 							},
 						},

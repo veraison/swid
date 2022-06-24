@@ -13,7 +13,7 @@ import (
 func TestVersionScheme_Set(t *testing.T) {
 	tests := []struct {
 		name     string
-		tv       uint64
+		tv       int64
 		expected error
 	}{
 		{

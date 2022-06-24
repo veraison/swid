@@ -18,8 +18,9 @@ type Entity struct {
 	// The registration id value is intended to uniquely identify a naming
 	// authority in a given scope (e.g. global, organization, vendor, customer,
 	// administrative domain, etc.) for the referenced entity. The value of a
-	// registration ID MUST be a RFC 3986 URI. The scope SHOULD be the scope of
-	// an organization. In a given scope, the registration id MUST be used
+	// registration ID MUST be a RFC 3986 URI; it is not intended to be
+	// dereferenced The scope SHOULD be the scope of an organization.
+	// In a given scope, the registration id MUST be used
 	// consistently for CoSWID tag production.
 	RegID string `cbor:"32,keyasint,omitempty" json:"reg-id,omitempty" xml:"regid,attr"`
 
@@ -27,14 +28,10 @@ type Entity struct {
 	// entity, and this tag or the referenced software component. If an integer
 	// value is used it MUST be an index value in the range -256 to 255. Integer
 	// values in the range -256 to -1 are reserved for testing and use in closed
-	// environments (see Section 5.2.2 of I-D.ietf-sacm-coswid). Integer values
+	// environments (see Section 6.2.2 of I-D.ietf-sacm-coswid). Integer values
 	// in the range 0 to 255 correspond to registered entries in the IANA
-	// "SWID/CoSWID Entity Role Value" registry (see Section 5.2.5 of
-	// I-D.ietf-sacm-coswid). If a string value is used it MUST be a private use
-	// name as defined in Section 5.2.2 of I-D.ietf-sacm-coswid. String values
-	// based on a Role Name from the IANA "SWID/CoSWID Entity Role Value"
-	// registry MUST NOT be used, as these values are less concise than their
-	// index value equivalent.
+	// "SWID/CoSWID Entity Role Value" registry (see Section 6.2.5 of
+	// I-D.ietf-sacm-coswid).
 	// The following additional requirements exist for the use of the "role"
 	// item:
 	// * An entity item MUST be provided with the role of "tag-creator" for
@@ -46,15 +43,11 @@ type Entity struct {
 	//   component.
 	Roles Roles `cbor:"33,keyasint" json:"role" xml:"role,attr"`
 
-	// The value of the Thumbprint field provides an integer-based hash algorithm
-	// identifier (hash-alg-id) and a byte string value (hash-value) that
-	// contains the corresponding hash value (i.e. the thumbprint) of the
-	// signing entity's public key certificate. This provides an indicator of
-	// which entity signed the CoSWID tag, which will typically be the tag
-	// creator. If the hash-alg-id is not known, then the integer value "0" MUST
-	// be used. This ensures parity between the SWID tag specification [SWID],
-	// which does not allow an algorithm to be identified for this field. See
-	// Section 2.9.1 of I-D.ietf-sacm-coswid for more details on the use of the
+	// The value of the Thumbprint field provides a hash value
+	// (i.e. the thumbprint) of the signing entity's public key certificate.
+	// This provides an indicator of which entity signed the CoSWID tag,
+	// which will typically be the tag creator. See Section 2.9.1 of
+	// I-D.ietf-sacm-coswid for more details on the use of the
 	// hash-entry data structure.
 	Thumbprint *HashEntry `cbor:"34,keyasint,omitempty" json:"thumbprint,omitempty" xml:"thumbprint,omitempty"`
 }

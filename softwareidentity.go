@@ -126,14 +126,14 @@ type SoftwareIdentity struct {
 	// user selections at install time, an installation might not include every
 	// artifact that could be created or executed on the endpoint when the
 	// software component is installed or run.
-	Payloads *Payloads `cbor:"6,keyasint,omitempty" json:"payload,omitempty" xml:"Payload,omitempty"`
+	Payload *Payload `cbor:"6,keyasint,omitempty" json:"payload,omitempty" xml:"Payload,omitempty"`
 
 	// This item can be used to record the results of a software discovery
 	// process used to identify untagged software on an endpoint or to represent
 	// indicators for why software is believed to be installed on the endpoint.
 	// In either case, a CoSWID tag can be created by the tool performing an
 	// analysis of the software components installed on the endpoint.
-	Evidences *Evidences `cbor:"3,keyasint,omitempty" json:"evidence,omitempty" xml:"Evidence,omitempty"`
+	Evidence *Evidence `cbor:"3,keyasint,omitempty" json:"evidence,omitempty" xml:"Evidence,omitempty"`
 }
 
 // NewTag instantiates a new SWID tag with the supplied tag identifier and
@@ -226,28 +226,6 @@ func (t *SoftwareIdentity) AddSoftwareMeta(m SoftwareMeta) error {
 	}
 
 	*t.SoftwareMetas = append(*t.SoftwareMetas, m)
-
-	return nil
-}
-
-// AddPayload adds the supplied Payload to the receiver SoftwareIdentity
-func (t *SoftwareIdentity) AddPayload(p Payload) error {
-	if t.Payloads == nil {
-		t.Payloads = new(Payloads)
-	}
-
-	*t.Payloads = append(*t.Payloads, p)
-
-	return nil
-}
-
-// AddEvidence adds the supplied Evidence to the receiver SoftwareIdentity
-func (t *SoftwareIdentity) AddEvidence(e Evidence) error {
-	if t.Evidences == nil {
-		t.Evidences = new(Evidences)
-	}
-
-	*t.Evidences = append(*t.Evidences, e)
 
 	return nil
 }

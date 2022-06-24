@@ -40,8 +40,8 @@ func TestRoles_Check(t *testing.T) {
 			name: "unknown codepoints",
 			testVector: TestVector{
 				val: []interface{}{
-					uint64(1024),
-					uint64(8192),
+					int64(1024),
+					int64(8192),
 				},
 			},
 			expected: nil,
@@ -63,7 +63,7 @@ func TestRoles_Check(t *testing.T) {
 				val: []interface{}{
 					"myRole",
 					RoleMaintainer,
-					uint64(1024),
+					int64(1024),
 				},
 			},
 			expected: nil,
@@ -86,7 +86,7 @@ func TestRoles_Check(t *testing.T) {
 					1024.1024,
 				},
 			},
-			expected: errors.New("role MUST be uint64 or string; got float64"),
+			expected: errors.New("role MUST be int64 or string; got float64"),
 		},
 	}
 
@@ -128,8 +128,8 @@ func TestRoles_String(t *testing.T) {
 			name: "unknown codepoints",
 			testVector: TestVector{
 				val: []interface{}{
-					uint64(1024),
-					uint64(8192),
+					int64(1024),
+					int64(8192),
 				},
 			},
 			expected: `role(1024) role(8192)`,
@@ -151,7 +151,7 @@ func TestRoles_String(t *testing.T) {
 				val: []interface{}{
 					"myRole",
 					RoleMaintainer,
-					uint64(1024),
+					int64(1024),
 				},
 			},
 			expected: `myRole maintainer role(1024)`,
@@ -218,8 +218,8 @@ func TestRoles_MarshalJSON(t *testing.T) {
 			name: "unknown codepoints",
 			testVector: TestVector{
 				val: []interface{}{
-					uint64(1024),
-					uint64(8192),
+					int64(1024),
+					int64(8192),
 				},
 			},
 			expected:    `[ 1024, 8192 ]`,
@@ -243,7 +243,7 @@ func TestRoles_MarshalJSON(t *testing.T) {
 				val: []interface{}{
 					"myRole",
 					RoleMaintainer,
-					uint64(1024),
+					int64(1024),
 				},
 			},
 			expected:    `[ "myRole", "maintainer", 1024 ]`,
@@ -336,7 +336,7 @@ func TestRoles_UnmarshalJSON(t *testing.T) {
 			expected: Roles{
 				val: []interface{}{
 					"hallelujatic",
-					uint64(1024),
+					int64(1024),
 					RoleTagCreator,
 					RoleDistributor,
 				},
@@ -423,7 +423,7 @@ func TestRoles_UnmarshalJSON(t *testing.T) {
 					"__ignored__",
 				},
 			},
-			expectedErr: errors.New("number 1024.1024 is not uint64"),
+			expectedErr: errors.New("number 1024.1024 is not int64"),
 		},
 	}
 
@@ -477,8 +477,8 @@ func TestRoles_MarshalCBOR(t *testing.T) {
 			name: "unknown codepoints",
 			testVector: TestVector{
 				val: []interface{}{
-					uint64(1024),
-					uint64(8192),
+					int64(1024),
+					int64(8192),
 				},
 			},
 			/*
@@ -520,7 +520,7 @@ func TestRoles_MarshalCBOR(t *testing.T) {
 				val: []interface{}{
 					"myRole",
 					RoleMaintainer,
-					uint64(1024),
+					int64(1024),
 				},
 			},
 			/*
@@ -559,7 +559,7 @@ func TestRoles_MarshalCBOR(t *testing.T) {
 				},
 			},
 			expected:    []byte("__ignored__"),
-			expectedErr: errors.New("number 1024.1024 is not uint64"),
+			expectedErr: errors.New("number 1024.1024 is not int64"),
 		},
 	}
 
@@ -655,7 +655,7 @@ func TestRoles_UnmarshalCBOR(t *testing.T) {
 			expected: Roles{
 				val: []interface{}{
 					"hallelujatic",
-					uint64(1024),
+					int64(1024),
 					RoleTagCreator,
 					RoleDistributor,
 				},
@@ -759,7 +759,7 @@ func TestRoles_UnmarshalCBOR(t *testing.T) {
 					"__ignored__",
 				},
 			},
-			expectedErr: errors.New("number 1024.1024 is not uint64"),
+			expectedErr: errors.New("number 1024.1024 is not int64"),
 		},
 	}
 

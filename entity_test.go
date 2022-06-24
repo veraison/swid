@@ -83,7 +83,7 @@ func TestEntity_RoundtripOneRoleText(t *testing.T) {
 func TestEntity_RoundtripMultipleRoles(t *testing.T) {
 	tv := Entity{}
 
-	err := tv.SetRoles(RoleTagCreator, RoleAggregator, "weird-new-role", uint64(20))
+	err := tv.SetRoles(RoleTagCreator, RoleAggregator, "weird-new-role", int64(20))
 	assert.Nil(t, err)
 
 	err = tv.SetEntityName("ACME Ltd")
@@ -116,13 +116,13 @@ func TestEntity_BadRoleType(t *testing.T) {
 	tv := Entity{}
 
 	err := tv.SetRoles(float32(1.23))
-	assert.EqualError(t, err, "role MUST be uint64 or string; got float32")
+	assert.EqualError(t, err, "role MUST be int64 or string; got float32")
 
-	type XYZ struct{ uint64 }
+	type XYZ struct{ int64 }
 	xyz := XYZ{1}
 
 	err = tv.SetRoles(xyz)
-	assert.EqualError(t, err, "role MUST be uint64 or string; got swid.XYZ")
+	assert.EqualError(t, err, "role MUST be int64 or string; got swid.XYZ")
 }
 
 func TestEntity_RoundtripWithGlobalAttributesLang(t *testing.T) {

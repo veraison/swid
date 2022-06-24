@@ -8,20 +8,33 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 )
 
-type codeDictionary map[uint64]string
+type codeDictionary map[int64]string
 
-type stringDictionary map[string]uint64
+type stringDictionary map[string]int64
 
 func stringifyCode(v *interface{}, dict codeDictionary, codeName string) error {
 	switch t := (*v).(type) {
 	case string:
 		*v = t
 		return nil
+	// uint64 is only for compatibility with code that uses this library and used
+	// the uint64 type before (as was default for CoSWID spec v16 and earlier)
 	case uint64:
+		if t > math.MaxInt64 {
+			return fmt.Errorf("%s should never be above max of int64", codeName)
+		}
+		if s, ok := dict[int64(t)]; ok {
+			*v = s
+		} else if codeName != "" {
+			*v = fmt.Sprintf("%s(%d)", codeName, t)
+		}
+		return nil
+	case int64:
 		if s, ok := dict[t]; ok {
 			*v = s
 		} else if codeName != "" {
@@ -41,16 +54,24 @@ func codifyString(v *interface{}, dict stringDictionary) error {
 			*v = ui
 		}
 		return nil
+	// CBOR library returns uint64 type for positive integers, but we need int64
+	// for all types since CoSWID Spec v17
 	case uint64:
+		if t > math.MaxInt64 {
+			return fmt.Errorf("there are no dictionary values above max of int64 in CoSWID")
+		}
+		*v = int64(t)
+		return nil
+	case int64:
 		return nil
 	case float64:
 		// check that the JSON number is integer (i.e., no fraction / exponent)
 		// if so, convert and replace
-		if t == float64(uint64(t)) {
-			*v = uint64(t)
+		if t == float64(int64(t)) {
+			*v = int64(t)
 			return nil
 		}
-		return fmt.Errorf("number %s is not uint64", strconv.FormatFloat(t, 'f', -1, 64))
+		return fmt.Errorf("number %s is not int64", strconv.FormatFloat(t, 'f', -1, 64))
 	default:
 		return fmt.Errorf("unhandled type: %T", t)
 	}
@@ -58,12 +79,16 @@ func codifyString(v *interface{}, dict stringDictionary) error {
 
 func isStringOrCode(v interface{}, codeName string) error {
 	switch t := v.(type) {
+	// uint64 is only for compatibility with code that uses this library and used
+	// the uint64 type before (as was default for CoSWID spec v16 and earlier)
 	case uint64:
+		return nil
+	case int64:
 		return nil
 	case string:
 		return nil
 	default:
-		return fmt.Errorf("%s MUST be uint64 or string; got %T", codeName, t)
+		return fmt.Errorf("%s MUST be int64 or string; got %T", codeName, t)
 	}
 }
 

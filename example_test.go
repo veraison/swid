@@ -68,7 +68,7 @@ func Example_useAPIToBuildPSAEndorsementSoftwareComponent() {
 
 	payload := NewPayload()
 	_ = payload.AddResource(*resource)
-	_ = tag.AddPayload(*payload)
+	tag.Payload = payload
 
 	// make link to the HW RoT
 	link, _ := NewLink("example.acme.roadrunner-hw-v1-0-0", *NewRel("psa-rot-compound"))
@@ -83,7 +83,7 @@ func Example_useAPIToBuildPSAEndorsementSoftwareComponent() {
 	fmt.Println(string(data))
 
 	// Output:
-	// {"tag-id":"example.acme.roadrunner-sw-bl-v1-0-0","tag-version":0,"software-name":"Roadrunner boot loader","software-version":"1.0.0","entity":[{"entity-name":"ACME Ltd","reg-id":"acme.example","role":["tagCreator","aggregator"]}],"link":[{"href":"example.acme.roadrunner-hw-v1-0-0","rel":"psa-rot-compound"}],"payload":[{"resource":[{"type":"arm.com-PSAMeasuredSoftwareComponent","arm.com-PSAMeasurementValue":"sha-256:YWFiYi4uLmVlZmY=","arm.com-PSASignerId":"sha-256:NTE5Mi4uLjEyMzQ="}]}]}
+	// {"tag-id":"example.acme.roadrunner-sw-bl-v1-0-0","tag-version":0,"software-name":"Roadrunner boot loader","software-version":"1.0.0","entity":[{"entity-name":"ACME Ltd","reg-id":"acme.example","role":["tagCreator","aggregator"]}],"link":[{"href":"example.acme.roadrunner-hw-v1-0-0","rel":"psa-rot-compound"}],"payload":{"resource":[{"type":"arm.com-PSAMeasuredSoftwareComponent","arm.com-PSAMeasurementValue":"sha-256:YWFiYi4uLmVlZmY=","arm.com-PSASignerId":"sha-256:NTE5Mi4uLjEyMzQ="}]}}
 	// <SoftwareIdentity xmlns="http://standards.iso.org/iso/19770/-2/2015/schema.xsd" tagId="example.acme.roadrunner-sw-bl-v1-0-0" name="Roadrunner boot loader" version="1.0.0"><Entity name="ACME Ltd" regid="acme.example" role="tagCreator aggregator"></Entity><Link href="example.acme.roadrunner-hw-v1-0-0" rel="psa-rot-compound"></Link><Payload><Resource type="arm.com-PSAMeasuredSoftwareComponent" measurementValue="sha-256:YWFiYi4uLmVlZmY=" signerId="sha-256:NTE5Mi4uLjEyMzQ="></Resource></Payload></SoftwareIdentity>
 }
 
@@ -122,7 +122,7 @@ func Example_completePrimaryTag() {
 			Root:   "%programdata%",
 			FsName: "rrdetector",
 		},
-		PathElements: PathElements{
+		PathElements: &PathElements{
 			Files: &Files{
 				File{
 					FileSystemItem: FileSystemItem{
@@ -140,7 +140,7 @@ func Example_completePrimaryTag() {
 
 	payload := NewPayload()
 	_ = payload.AddDirectory(dir)
-	_ = tag.AddPayload(*payload)
+	tag.Payload = payload
 
 	// encode tag to XML
 	data, _ := tag.ToXML()
@@ -174,17 +174,15 @@ func Example_decodePSAEndorsementSoftwareComponent() {
 			"rel": "psa-rot-compound"
 		  }
 		],
-		"payload": [
-		  {
-			"resource": [
-			  {
-				"type": "arm.com-PSAMeasuredSoftwareComponent",
-				"arm.com-PSAMeasurementValue": "sha-256:YWFiYi4uLmVlZmY=",
-				"arm.com-PSASignerId": "sha-256:NTE5Mi4uLjEyMzQ="
-			  }
-			]
-		  }
-		]
+		"payload": {
+		  "resource": [
+			{
+			  "type": "arm.com-PSAMeasuredSoftwareComponent",
+			  "arm.com-PSAMeasurementValue": "sha-256:YWFiYi4uLmVlZmY=",
+			  "arm.com-PSASignerId": "sha-256:NTE5Mi4uLjEyMzQ="
+			}
+		  ]
+		}
 	  }`)
 
 	if err := tag.FromJSON(data); err != nil {
@@ -204,8 +202,8 @@ func Example_decodePSAEndorsementSoftwareComponent() {
 }
 
 func checkResType(tag SoftwareIdentity) bool {
-	if payloads := tag.Payloads; payloads != nil {
-		if resources := (*payloads)[0].Resources; resources != nil {
+	if payload := tag.Payload; payload != nil {
+		if resources := payload.Resources; resources != nil {
 			return (*resources)[0].Type == ResourceTypePSAMeasuredSoftwareComponent
 		}
 	}

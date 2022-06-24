@@ -30,9 +30,9 @@ type SoftwareMeta struct {
 	// version can be the same through multiple releases of a software
 	// component, while the software-version specified in the concise-swid-tag
 	// group is much more specific and will change for each software component
-	// release. This version is intended to be used for string comparison only
-	// and is not intended to be used to determine if a specific value is
-	// earlier or later in a sequence.
+	// release. This version is intended to be used for string comparison
+	// (byte-by-byte) only and is not intended to be used to determine if a
+	// specific value is earlier or later in a sequence.
 	ColloquialVersion string `cbor:"45,keyasint,omitempty" json:"colloquial-version,omitempty" xml:"colloquialVersion,attr,omitempty"`
 
 	// A textual value that provides a detailed description of the software
@@ -58,13 +58,15 @@ type SoftwareMeta struct {
 	// supplemental tag will typically contain this information. In other cases,
 	// where a general-purpose key can be provided that applies to all possible
 	// installs of the software component on different endpoints, a primary tag
-	// will typically contain this information.
+	// will typically contain this information. Since CoSWID tags are not
+	// intended to contain confidential information, tag authors are advised
+	// not to record unprotected, private software license keys in this field.
 	EntitlementKey string `cbor:"49,keyasint,omitempty" json:"entitlement-key,omitempty" xml:"entitlementKey,attr,omitempty"`
 
 	// The name (or tag-id) of the software component that created the CoSWID
 	// tag. If the generating software component has a SWID or CoSWID tag, then
 	// the tag-id for the generating software component SHOULD be provided.
-	Generator string `cbor:"50,keyasint,omitempty" json:"generator,omitempty" xml:"generator,attr,omitempty"`
+	Generator *TagID `cbor:"50,keyasint,omitempty" json:"generator,omitempty" xml:"generator,attr,omitempty"`
 
 	// A globally unique identifier used to identify a set of software
 	// components that are related. Software components sharing the same

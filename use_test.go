@@ -47,7 +47,7 @@ func TestUse_MarshalJSON(t *testing.T) {
 		{
 			name: "unknown codepoint 1024",
 			testVector: TestVector{
-				val: uint64(1024),
+				val: int64(1024),
 			},
 			expected:    `1024`,
 			expectedErr: nil,
@@ -131,7 +131,7 @@ func TestUse_UnmarshalJSON(t *testing.T) {
 			testVector: TestVector{
 				val: `1024`,
 			},
-			expected:    Use{uint64(1024)},
+			expected:    Use{int64(1024)},
 			expectedErr: nil,
 		},
 		{
@@ -140,7 +140,7 @@ func TestUse_UnmarshalJSON(t *testing.T) {
 				val: `1024.1024`,
 			},
 			expected:    Use{"__ignored__"},
-			expectedErr: errors.New("number 1024.1024 is not uint64"),
+			expectedErr: errors.New("number 1024.1024 is not int64"),
 		},
 		{
 			name: "JSON type object",
@@ -249,7 +249,7 @@ func TestUse_MarshalCBOR(t *testing.T) {
 				val: float64(4.343),
 			},
 			expected:    []byte{0x00},
-			expectedErr: errors.New("number 4.343 is not uint64"),
+			expectedErr: errors.New("number 4.343 is not int64"),
 		},
 	}
 
@@ -346,7 +346,7 @@ func TestUse_UnmarshalCBOR(t *testing.T) {
 					0x19, 0x04, 0x00,
 				},
 			},
-			expected:    Use{uint64(1024)},
+			expected:    Use{int64(1024)},
 			expectedErr: nil,
 		},
 		{
@@ -360,7 +360,7 @@ func TestUse_UnmarshalCBOR(t *testing.T) {
 				},
 			},
 			expected:    Use{"__ignored__"},
-			expectedErr: errors.New("number 1024.1024 is not uint64"),
+			expectedErr: errors.New("number 1024.1024 is not int64"),
 		},
 		{
 			name: "CBOR type map",
@@ -454,7 +454,7 @@ func TestUse_String(t *testing.T) {
 		},
 		{
 			name:       "unknown code 1024",
-			testVector: Use{uint64(1024)},
+			testVector: Use{int64(1024)},
 			expected:   "use(1024)",
 		},
 		{
