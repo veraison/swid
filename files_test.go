@@ -15,7 +15,7 @@ func TestFiles_DoNotEncodeZeroLength(t *testing.T) {
 	tv := Files{}
 
 	_, err := em.Marshal(tv)
-	assert.EqualError(t, err, "array MUST NOT be 0-length")
+	assert.EqualError(t, err, "array of Files MUST NOT be 0-length")
 }
 
 func TestFiles_RoundtripEncodeOne(t *testing.T) {

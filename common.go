@@ -154,7 +154,7 @@ func arrayToCBOR(a reflect.Value) ([]byte, error) {
 
 	switch a.Len() {
 	case 0:
-		return nil, errors.New("array MUST NOT be 0-length")
+		return nil, fmt.Errorf("array of %s MUST NOT be 0-length", a.Type().Name())
 	case 1:
 		return em.Marshal(a.Index(0).Interface())
 	default:

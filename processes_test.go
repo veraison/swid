@@ -22,7 +22,7 @@ func TestProcesses_MarshalCBOR(t *testing.T) {
 			name:        "zero elements",
 			tv:          Processes{},
 			expected:    []byte("__ignored__"),
-			expectedErr: errors.New("array MUST NOT be 0-length"),
+			expectedErr: errors.New("array of Processes MUST NOT be 0-length"),
 		},
 		{
 			name: "one element (encodes to scalar)",
