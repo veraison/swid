@@ -14,28 +14,28 @@ type Ownership struct {
    $ownership /= shared
    $ownership /= private
    $ownership /= abandon
-   $ownership /= uint / text
-   shared=1
+   $ownership /= int / text
+   abandon=1
    private=2
-   abandon=3
+   shared=3
 */
 
 // Ownership constants
 const (
-	OwnershipShared = uint64(iota + 1)
+	OwnershipAbandon = int64(iota + 1)
 	OwnershipPrivate
-	OwnershipAbandon
-	OwnershipUnknown = ^uint64(0)
+	OwnershipShared
+	OwnershipUnknown = ^int64(0)
 )
 
 var (
-	ownershipToString = map[uint64]string{
+	ownershipToString = map[int64]string{
 		OwnershipShared:  "shared",
 		OwnershipPrivate: "private",
 		OwnershipAbandon: "abandon",
 	}
 
-	stringToOwnership = map[string]uint64{
+	stringToOwnership = map[string]int64{
 		"shared":  OwnershipShared,
 		"private": OwnershipPrivate,
 		"abandon": OwnershipAbandon,

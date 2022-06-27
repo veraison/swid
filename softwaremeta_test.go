@@ -18,7 +18,7 @@ var (
 		Edition:                 "Enterprise",
 		EntitlementDataRequired: &entitlementDataRequired,
 		EntitlementKey:          "deadbeef",
-		Generator:               "veraison-coswid-generator",
+		Generator:               NewTagID("veraison-coswid-generator"),
 		PersistentID:            "356CCB1C-A873-42B0-8D17-FA33F56B9F3E",
 		Product:                 "Alapage",
 		ProductFamily:           "Email System",

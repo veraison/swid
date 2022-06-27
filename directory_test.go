@@ -8,7 +8,7 @@ import "testing"
 func TestDirectory_RoundtripFlat(t *testing.T) {
 	tv := Directory{
 		FileSystemItem: testFileSystemItemMinSet,
-		PathElements: PathElements{
+		PathElements: &PathElements{
 			Files: &Files{testFileFull},
 		},
 	}
@@ -64,11 +64,11 @@ func TestDirectory_RoundtripFlat(t *testing.T) {
 func TestDirectory_RoundtripNested(t *testing.T) {
 	tv := Directory{
 		FileSystemItem: testFileSystemItemMinSet,
-		PathElements: PathElements{
+		PathElements: &PathElements{
 			Directories: &Directories{
 				Directory{
 					FileSystemItem: testFileSystemItemMinSet,
-					PathElements: PathElements{
+					PathElements: &PathElements{
 						Files: &Files{testFileMinSet},
 					},
 				},

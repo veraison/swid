@@ -15,13 +15,19 @@ import (
 type HashEntry struct {
 	_ struct{} `cbor:",toarray"`
 
-	// The number used as a value for HashAlgID MUST refer an ID in the IANA
-	// "Name Information Hash Algorithm Registry". Other hash algorithms MUST
-	// NOT be used.
+	// The number used as a value for hash-alg-id is an integer-based
+	// hash algorithm identifier who's value MUST refer to an ID in the
+	// IANA "Named Information Hash Algorithm Registry" [IANA.named-information]
+	// with a Status of "current" (at the time the generator software was built
+	// or later); other hash algorithms MUST NOT be used. If the hash-alg-id is
+	// not known, then the integer value "0" MUST be used. This allows for
+	// conversion from ISO SWID tags [SWID], which do not allow an algorithm to
+	// be identified for this field.
 	HashAlgID uint64
 
-	// The HashValue MUST represent the raw hash value of the hashed resource
-	// generated using the hash algorithm indicated by the HashAlgID
+	// The hash-value MUST represent the raw hash value as a byte string
+	// (as opposed to, e.g., base64 encoded) generated from the representation
+	// of the resource using the hash algorithm indicated by hash-alg-id.
 	HashValue []byte
 }
 

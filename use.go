@@ -14,7 +14,7 @@ type Use struct {
    $use /= optional
    $use /= required
    $use /= recommended
-   $use /= uint / text
+   $use /= int / text
    optional=1
    required=2
    recommended=3
@@ -22,20 +22,20 @@ type Use struct {
 
 // Use constants
 const (
-	UseOptional = uint64(iota + 1)
+	UseOptional = int64(iota + 1)
 	UseRequired
 	UseRecommended
-	UseUnknown = ^uint64(0)
+	UseUnknown = ^int64(0)
 )
 
 var (
-	useToString = map[uint64]string{
+	useToString = map[int64]string{
 		UseOptional:    "optional",
 		UseRequired:    "required",
 		UseRecommended: "recommended",
 	}
 
-	stringToUse = map[string]uint64{
+	stringToUse = map[string]int64{
 		"optional":    UseOptional,
 		"required":    UseRequired,
 		"recommended": UseRecommended,

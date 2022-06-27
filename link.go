@@ -20,7 +20,8 @@ type Link struct {
 	// not limited to, the following (which is a slightly modified excerpt from
 	// [SWID]):
 	// * If no URI scheme is provided, then the URI is to be interpreted as
-	//   being relative to the URI of the CoSWID tag. For example,
+	//   being relative to the base URI of the CoSWID tag, i.e., the URI
+	//   under which the CoSWID tag was provided. For example,
 	//   "folder/supplemental.coswid"
 	// * a physical resource location with any acceptable URI scheme (e.g., file://
 	//   http:// https:// ftp://)
@@ -30,7 +31,8 @@ type Link struct {
 	//   For example, "swid:2df9de35-0aff-4a86-ace6-f7dddd1ade4c" references the
 	//   tag with the tag-id value "2df9de35-0aff-4a86-ace6-f7dddd1ade4c".
 	// * a URI with "swidpath:" as the scheme, which refers to another CoSIWD
-	//   via an XPATH query. This URI would need to be resolved in the context of
+	//   via an XPATH query [W3C.REC-xpath20-20101214] that matches items in that
+	//   tag (Section 5.2). This URI would need to be resolved in the context of
 	//   the system entity via software components that can lookup other CoSWID
 	//   tags and select the appropriate tag based on an XPATH query
 	//   [W3C.REC-xpath20-20101214].
@@ -48,63 +50,61 @@ type Link struct {
 	// Queries Recommendation (see [W3C.REC-css3-mediaqueries-20120619]).
 	Media string `cbor:"10,keyasint,omitempty" json:"media,omitempty" xml:"media,attr,omitempty"`
 
-	// An integer or textual value used when the "href" item references another
+	// An integer or textual value (integer label with text escape,
+	// see Section 2, for the "Software Tag Link Ownership Values"
+	// registry Section 4.3) used when the "href" item references another
 	// software component to indicate the degree of ownership between the
-	// software component referenced by the COSWID tag and the software
-	// component referenced by the link. If an integer value is used it MUST be
-	// an index value in the range -256 to 255. Integer values in the range -256
-	// to -1 are reserved for testing and use in closed environments (see
-	// Section 5.2.2 of I-D.ietf-sacm-coswid). Integer values in the range 0 to
-	// 255 correspond to registered entries in the IANA "SWID/CoSWID Link
-	// Ownership Value" registry (see Section 5.2.6 of I-D.ietf-sacm-coswid.) If
-	// a string value is used it MUST be a private use name as defined in
-	// Section 5.2.2 of I-D.ietf-sacm-coswid. String values based on a Ownership
-	// Type Name from the IANA "SWID/CoSWID Link Ownership Value" registry MUST
-	// NOT be used, as these values are less concise than their index value
-	// equivalent.
+	// software component referenced by the CoSWID tag and the software
+	// component referenced by the link. If an integer value is used it MUST
+	// be an index value in the range -256 to 255. Integer values in the range
+	// -256 to -1 are reserved for testing and use in closed environments
+	// (see Section 6.2.2). Integer values in the range 0 to 255 correspond
+	// to registered entries in the "Software Tag Link Ownership Values" registry.
 	Ownership *Ownership `cbor:"39,keyasint,omitempty" json:"ownership,omitempty" xml:"ownership,attr,omitempty"`
 
-	// An integer or textual value that identifies the relationship between this
-	// CoSWID and the target resource identified by the "href" item. If an
-	// integer value is used it MUST be an index value in the range -256 to
-	// 65535. Integer values in the range -256 to -1 are reserved for testing
-	// and use in closed environments (see Section 5.2.2 of
-	// I-D.ietf-sacm-coswid). Integer values in the range 0 to 65535 correspond
-	// to registered entries in the IANA "SWID/CoSWID Link Relationship Value"
-	// registry (see Section 5.2.7 of I-D.ietf-sacm-coswid.) If a string value
-	// is used it MUST be either a private use name as defined in Section 5.2.2
-	// of I-D.ietf-sacm-coswid or a "Relation Name" from the IANA "Link Relation
-	// Types" registry:
-	// https://www.iana.org/assignments/link-relations/link-relations.xhtml as
-	// defined by [RFC8288]. When a string value defined in the IANA
-	// "SWID/CoSWID Link Relationship Value" registry matches a Relation Name
-	// defined in the IANA "Link Relation Types" registry, the index value in
-	// the IANA "SWID/CoSWID Link Relationship Value" registry MUST be used
-	// instead, as this relationship has a specialized meaning in the context of
-	// a SWID/CoSWID tag. String values based on a Relationship Type Name from
-	// the IANA "SWID/CoSWID Link Relationship Value" registry MUST NOT be used,
-	// as these values are less concise than their index value equivalent
+	// An integer or textual value that (integer label with text escape,
+	// see Section 2, for the "Software Tag Link Link Relationship Values"
+	// registry Section 4.3) identifies the relationship between this CoSWID
+	// and the target resource identified by the "href" item. If an integer
+	// value is used it MUST be an index value in the range -256 to 65535.
+	// Integer values in the range -256 to -1 are reserved for testing and
+	// use in closed environments (see Section 6.2.2). Integer values in the
+	// range 0 to 65535 correspond to registered entries in the IANA
+	// "Software Tag Link Relationship Values" registry (see Section 6.2.7.
+	// If a string value is used it MUST be either a private use name as defined
+	// in Section 6.2.2 or a "Relation Name" from the IANA "Link Relation Types"
+	// registry: https://www.iana.org/assignments/link-relations/link-relations.xhtml
+	// as defined by [RFC8288]. When a string value defined in the IANA
+	// "Software Tag Link Relationship Values" registry matches a Relation
+	// Name defined in the IANA "Link Relation Types" registry, the index
+	// value in the IANA "Software Tag Link Relationship Values" registry
+	// MUST be used instead, as this relationship has a specialized meaning
+	// in the context of a CoSWID tag. String values correspond to registered
+	// entries in the "Software Tag Link Relationship Values" registry.
 	Rel Rel `cbor:"40,keyasint" json:"rel" xml:"rel,attr"`
 
 	// A link can point to arbitrary resources on the endpoint, local network,
 	// or Internet using the href item. Use of this item supplies the resource
-	// consumer with a hint of what type of resource to expect. Media types are
-	// identified by referencing a "Name" from the IANA "Media Types" registry:
-	// http://www.iana.org/assignments/media-types/media-types.xhtml.
+	// consumer with a hint of what type of resource to expect. (This is a hint:
+	// There is no obligation for the server hosting the target of the URI to
+	// use the indicated media type when the URI is dereferenced.) Media types
+	// are identified by referencing a "Name" from the IANA "Media Types"
+	// registry: http://www.iana.org/assignments/media-types/media-types.xhtml.
+	// This item maps to '/SoftwareIdentity/Link/@type' in [SWID].
 	MediaType string `cbor:"41,keyasint,omitempty" json:"media-type,omitempty" xml:"type,attr,omitempty"`
 
-	//  An integer or textual value used to determine if the referenced software
-	//  component has to be installed before installing the software component
-	//  identified by the COSWID tag. If an integer value is used it MUST be an
-	//  index value in the range -256 to 255. Integer values in the range -256 to
-	//  -1 are reserved for testing and use in closed environments (see Section
-	//  5.2.2 of I-D.ietf-sacm-coswid). Integer values in the range 0 to 255
-	//  correspond to registered entries in the IANA "Link Use Value Value"
-	//  registry (see Section 5.2.8 of I-D.ietf-sacm-coswid. If a string value is
-	//  used it MUST be a private use name as defined in section Section 5.2.2 of
-	//  I-D.ietf-sacm-coswid. String values based on an Link Use Type Name from
-	//  the IANA "SWID/CoSWID Link Use Value" registry MUST NOT be used, as these
-	//  values are less concise than their index value equivalent
+	// An integer or textual value (integer label with text escape, see
+	// Section 2, for the "Software Tag Link Link Relationship Values"
+	// registry Section 4.3) used to determine if the referenced software
+	// component has to be installed before installing the software component
+	// identified by the COSWID tag. If an integer value is used it MUST be an
+	// index value in the range -256 to 255. Integer values in the range -256
+	// to -1 are reserved for testing and use in closed environments
+	// (see Section 6.2.2). Integer values in the range 0 to 255 correspond to
+	// registered entries in the IANA "Link Use Values" registry (see
+	// Section 6.2.8. If a string value is used it MUST be a private use name
+	// as defined in Section 6.2.2. String values correspond to registered
+	// entries in the "Software Tag Link Use Values" registry
 	Use *Use `cbor:"42,keyasint,omitempty" json:"use,omitempty" xml:"use,attr,omitempty"`
 }
 

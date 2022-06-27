@@ -7,7 +7,7 @@ package swid
 type Directory struct {
 	DirectoryExtension
 	FileSystemItem
-	PathElements `cbor:"26,keyasint" json:"path-elements"`
+	*PathElements `cbor:"26,keyasint" json:"path-elements"`
 }
 
 // PathElements models CoSWID path-elements-group

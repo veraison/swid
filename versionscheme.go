@@ -19,7 +19,7 @@ type VersionScheme struct {
   $version-scheme /= alphanumeric
   $version-scheme /= decimal
   $version-scheme /= semver
-  $version-scheme /= uint / text
+  $version-scheme /= int / text
   multipartnumeric = 1
   multipartnumeric-suffix = 2
   alphanumeric = 3
@@ -29,16 +29,16 @@ type VersionScheme struct {
 
 // VersionScheme constants
 const (
-	VersionSchemeMultipartNumeric = uint64(iota + 1)
+	VersionSchemeMultipartNumeric = int64(iota + 1)
 	VersionSchemeMultipartNumericSuffix
 	VersionSchemeAlphaNumeric
 	VersionSchemeDecimal
 	VersionSchemeSemVer  = 16384
-	VersionSchemeUnknown = ^uint64(0)
+	VersionSchemeUnknown = ^int64(0)
 )
 
 var (
-	versionSchemeToString = map[uint64]string{
+	versionSchemeToString = map[int64]string{
 		VersionSchemeMultipartNumeric:       "multipartnumeric",
 		VersionSchemeMultipartNumericSuffix: "multipartnumeric+suffix",
 		VersionSchemeAlphaNumeric:           "alphanumeric",
@@ -46,7 +46,7 @@ var (
 		VersionSchemeSemVer:                 "semver",
 	}
 
-	stringToVersionScheme = map[string]uint64{
+	stringToVersionScheme = map[string]int64{
 		"multipartnumeric":        VersionSchemeMultipartNumeric,
 		"multipartnumeric+suffix": VersionSchemeMultipartNumericSuffix,
 		"alphanumeric":            VersionSchemeAlphaNumeric,
@@ -61,7 +61,7 @@ func (vs VersionScheme) String() string {
 }
 
 // Check returns nil if the VersionScheme receiver is of type string or code-point
-// (i.e., uint)
+// (i.e., int)
 func (vs VersionScheme) Check() error {
 	return isStringOrCode(vs.val, "version-scheme")
 }
@@ -100,7 +100,7 @@ func (vs *VersionScheme) UnmarshalXMLAttr(attr xml.Attr) error {
 	return xmlAttrToCode(attr, stringToVersionScheme, &vs.val)
 }
 
-func (vs *VersionScheme) SetCode(v uint64) error {
+func (vs *VersionScheme) SetCode(v int64) error {
 	if _, ok := versionSchemeToString[v]; ok {
 		vs.val = v
 		return nil

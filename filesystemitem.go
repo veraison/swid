@@ -5,7 +5,6 @@ package swid
 
 // FileSystemItem models CoSWID filesystem-item
 type FileSystemItem struct {
-	GlobalAttributes
 
 	// A boolean value indicating if a file or directory is significant or
 	// required for the software component to execute or function properly.

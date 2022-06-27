@@ -89,6 +89,19 @@ func (t TagID) String() string {
 	}
 }
 
+// Returns TagID in URI representation according to CoSWID Spec
+// useful for URI fields like link->href
+func (t TagID) URI() string {
+	switch v := t.val.(type) {
+	case string:
+		return v
+	case uuid.UUID:
+		return "swid:" + v.String()
+	default:
+		return "unknown type for tag-id"
+	}
+}
+
 // MarshalXMLAttr encodes the TagID receiver as XML attribute
 func (t TagID) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 	return xml.Attr{Name: name, Value: t.String()}, nil

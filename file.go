@@ -5,6 +5,8 @@ package swid
 
 // File models CoSWID file-entry
 type File struct {
+	GlobalAttributes
+
 	FileExtension
 
 	FileSystemItem
