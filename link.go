@@ -31,7 +31,8 @@ type Link struct {
 	//   For example, "swid:2df9de35-0aff-4a86-ace6-f7dddd1ade4c" references the
 	//   tag with the tag-id value "2df9de35-0aff-4a86-ace6-f7dddd1ade4c".
 	// * a URI with "swidpath:" as the scheme, which refers to another CoSIWD
-	//   via an XPATH query [W3C.REC-xpath20-20101214] that matches items in that tag (Section 5.2). This URI would need to be resolved in the context of
+	//   via an XPATH query [W3C.REC-xpath20-20101214] that matches items in that
+	//   tag (Section 5.2). This URI would need to be resolved in the context of
 	//   the system entity via software components that can lookup other CoSWID
 	//   tags and select the appropriate tag based on an XPATH query
 	//   [W3C.REC-xpath20-20101214].
