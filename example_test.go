@@ -138,8 +138,20 @@ func Example_completePrimaryTag() {
 		},
 	}
 
+	file := File{
+		FileSystemItem: FileSystemItem{
+			FsName: "test.exe",
+		},
+		Size: &fileSize,
+		Hash: &HashEntry{
+			HashAlgID: 1,
+			HashValue: fileHash,
+		},
+	}
+
 	payload := NewPayload()
 	_ = payload.AddDirectory(dir)
+	_ = payload.AddFile(file)
 	tag.Payload = payload
 
 	// encode tag to XML
@@ -147,7 +159,7 @@ func Example_completePrimaryTag() {
 	fmt.Println(string(data))
 
 	// Output:
-	// <SoftwareIdentity xmlns="http://standards.iso.org/iso/19770/-2/2015/schema.xsd" tagId="com.acme.rrd2013-ce-sp1-v4-1-5-0" name="ACME Roadrunner Detector 2013 Coyote Edition SP1" version="4.1.5"><Meta activationStatus="trial" colloquialVersion="2013" edition="coyote" product="Roadrunner Detector" revision="sp1"></Meta><Entity name="The ACME Corporation" regid="acme.com" role="tagCreator softwareCreator"></Entity><Entity name="Coyote Services, Inc." regid="mycoyote.com" role="distributor"></Entity><Link href="www.gnu.org/licenses/gpl.txt" rel="license"></Link><Payload><Directory name="rrdetector" root="%programdata%"><File name="rrdetector.exe" size="532712" hash="sha-256:oxT8LcZjrnpra8Z4dZQFc5bms/VpzVD9XdtNG7r9K2o="></File></Directory></Payload></SoftwareIdentity>
+	// <SoftwareIdentity xmlns="http://standards.iso.org/iso/19770/-2/2015/schema.xsd" tagId="com.acme.rrd2013-ce-sp1-v4-1-5-0" name="ACME Roadrunner Detector 2013 Coyote Edition SP1" version="4.1.5"><Meta activationStatus="trial" colloquialVersion="2013" edition="coyote" product="Roadrunner Detector" revision="sp1"></Meta><Entity name="The ACME Corporation" regid="acme.com" role="tagCreator softwareCreator"></Entity><Entity name="Coyote Services, Inc." regid="mycoyote.com" role="distributor"></Entity><Link href="www.gnu.org/licenses/gpl.txt" rel="license"></Link><Payload><Directory name="rrdetector" root="%programdata%"><File name="rrdetector.exe" size="532712" hash="sha-256:oxT8LcZjrnpra8Z4dZQFc5bms/VpzVD9XdtNG7r9K2o="></File></Directory><File name="test.exe" size="532712" hash="sha-256:oxT8LcZjrnpra8Z4dZQFc5bms/VpzVD9XdtNG7r9K2o="></File></Payload></SoftwareIdentity>
 }
 
 func Example_decodePSAEndorsementSoftwareComponent() {

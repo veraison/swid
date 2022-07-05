@@ -27,6 +27,16 @@ func (p *Payload) AddDirectory(d Directory) error {
 	return nil
 }
 
+func (p *Payload) AddFile(f File) error {
+	if p.Files == nil {
+		p.Files = new(Files)
+	}
+
+	*p.Files = append(*p.Files, f)
+
+	return nil
+}
+
 // AddResource adds the supplied Directory to the ResourceCollection of the
 // Payload receiver
 func (p *Payload) AddResource(r Resource) error {
