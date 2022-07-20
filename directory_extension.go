@@ -5,5 +5,6 @@ package swid
 
 // DirectoryExtension is a placeholder for $$directory-extension
 type DirectoryExtension struct {
-	// no directory-extensions defined
+	// TCG RIM extension
+	TCGRIMHashEntry *HashEntry `cbor:"7,keyasint,omitempty" json:"tgc-rim:hash-entry,omitempty" xml:"-"`
 }
