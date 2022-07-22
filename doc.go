@@ -113,19 +113,7 @@ Or a CoSWID/JSON tag:
 	if err := tag.FromJSON(data); err != nil { ... }
 
 Note that all nested fields are accessible from outside the swid package, so
-(for now) no special getters are provided by the API and you will need to
-create your own, e.g.:
-
-	// CheckResType return true if the a resource exists at the expected location and
-	// is of type "arm.com-PSAMeasuredSoftwareComponent"
-	func CheckResType(tag swid.SoftwareIdentity) bool {
-		if payloads := tag.Payloads; payloads != nil {
-			if resources := (*payloads)[0].Resources; resources != nil {
-				return (*resources)[0].Type == ResourceTypePSAMeasuredSoftwareComponent
-			}
-		}
-		return false
-	}
+(for now) no special getters are provided by the API.
 
 Enjoy!
 */

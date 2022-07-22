@@ -4,9 +4,56 @@
 package swid
 
 import (
+	"encoding/xml"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+)
+
+var (
+	testXML  = []byte(`<SoftwareIdentity tagId="f432dc99-2e06-434d-b9ad-2b22e35b6fa4" name="Roadrunner software bundle" version="1.0.0"><Entity name="ACME Ltd" regid="acme.example" role="tagCreator softwareCreator"></Entity><Link href="d84fb5e2-d198-49b4-9d65-3a82421bf180" rel="parent"></Link></SoftwareIdentity>`)
+	testJSON = []byte(`{
+		"tag-id": "f432dc99-2e06-434d-b9ad-2b22e35b6fa4",
+		"tag-version": 0,
+		"software-name": "Roadrunner software bundle",
+		"software-version": "1.0.0",
+		"entity": [
+		  {
+			"entity-name": "ACME Ltd",
+			"reg-id": "acme.example",
+			"role": [
+			  "tagCreator",
+			  "softwareCreator"
+			]
+		  }
+		],
+		"link": [
+		  {
+			"href": "d84fb5e2-d198-49b4-9d65-3a82421bf180",
+			"rel": "parent"
+		  }
+		]
+	}`)
+	testCBOR = []byte{
+		0xa6, 0x00, 0x50, 0xf4, 0x32, 0xdc, 0x99, 0x2e,
+		0x06, 0x43, 0x4d, 0xb9, 0xad, 0x2b, 0x22, 0xe3,
+		0x5b, 0x6f, 0xa4, 0x0c, 0x00, 0x01, 0x78, 0x1a,
+		0x52, 0x6f, 0x61, 0x64, 0x72, 0x75, 0x6e, 0x6e,
+		0x65, 0x72, 0x20, 0x73, 0x6f, 0x66, 0x74, 0x77,
+		0x61, 0x72, 0x65, 0x20, 0x62, 0x75, 0x6e, 0x64,
+		0x6c, 0x65, 0x0d, 0x65, 0x31, 0x2e, 0x30, 0x2e,
+		0x30, 0x02, 0xa3, 0x18, 0x1f, 0x68, 0x41, 0x43,
+		0x4d, 0x45, 0x20, 0x4c, 0x74, 0x64, 0x18, 0x20,
+		0x6c, 0x61, 0x63, 0x6d, 0x65, 0x2e, 0x65, 0x78,
+		0x61, 0x6d, 0x70, 0x6c, 0x65, 0x18, 0x21, 0x82,
+		0x01, 0x02, 0x04, 0xa2, 0x18, 0x26, 0x78, 0x24,
+		0x64, 0x38, 0x34, 0x66, 0x62, 0x35, 0x65, 0x32,
+		0x2d, 0x64, 0x31, 0x39, 0x38, 0x2d, 0x34, 0x39,
+		0x62, 0x34, 0x2d, 0x39, 0x64, 0x36, 0x35, 0x2d,
+		0x33, 0x61, 0x38, 0x32, 0x34, 0x32, 0x31, 0x62,
+		0x66, 0x31, 0x38, 0x30, 0x18, 0x28, 0x06,
+	}
 )
 
 func makeACMEEntityWithRoles(t *testing.T, roles ...interface{}) Entity {
@@ -18,6 +65,119 @@ func makeACMEEntityWithRoles(t *testing.T, roles ...interface{}) Entity {
 	require.Nil(t, e.SetRoles(roles...))
 
 	return e
+}
+
+func TestTag_FromCBOR_ok(t *testing.T) {
+	expected := SoftwareIdentity{
+		TagID:           *NewTagID("f432dc99-2e06-434d-b9ad-2b22e35b6fa4"),
+		SoftwareName:    "Roadrunner software bundle",
+		SoftwareVersion: "1.0.0",
+		Entities: Entities{
+			makeACMEEntityWithRoles(t,
+				RoleTagCreator,
+				RoleSoftwareCreator,
+			),
+		},
+		Links: &Links{
+			Link{
+				Href: "d84fb5e2-d198-49b4-9d65-3a82421bf180",
+				Rel:  *NewRel(RelParent),
+			},
+		},
+	}
+
+	var tv SoftwareIdentity
+
+	err := tv.FromCBOR(testCBOR)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, tv)
+}
+
+func TestTag_FromJSON_ok(t *testing.T) {
+	expected := SoftwareIdentity{
+		TagID:           *NewTagID("f432dc99-2e06-434d-b9ad-2b22e35b6fa4"),
+		SoftwareName:    "Roadrunner software bundle",
+		SoftwareVersion: "1.0.0",
+		Entities: Entities{
+			makeACMEEntityWithRoles(t,
+				RoleTagCreator,
+				RoleSoftwareCreator,
+			),
+		},
+		Links: &Links{
+			Link{
+				Href: "d84fb5e2-d198-49b4-9d65-3a82421bf180",
+				Rel:  *NewRel(RelParent),
+			},
+		},
+	}
+
+	var tv SoftwareIdentity
+
+	err := tv.FromJSON(testJSON)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, tv)
+}
+
+func TestTag_FromXML_ok(t *testing.T) {
+	expected := SoftwareIdentity{
+		XMLName: xml.Name{
+			Local: "SoftwareIdentity",
+		},
+		TagID:           *NewTagID("f432dc99-2e06-434d-b9ad-2b22e35b6fa4"),
+		SoftwareName:    "Roadrunner software bundle",
+		SoftwareVersion: "1.0.0",
+		Entities: Entities{
+			makeACMEEntityWithRoles(t,
+				"tagCreator",
+				"softwareCreator",
+			),
+		},
+		Links: &Links{
+			Link{
+				Href: "d84fb5e2-d198-49b4-9d65-3a82421bf180",
+				Rel:  *NewRel(RelParent),
+			},
+		},
+	}
+
+	var tv SoftwareIdentity
+
+	err := tv.FromXML(testXML)
+	assert.NoError(t, err)
+	assert.Equal(t, expected, tv)
+}
+
+func TestTag_encodings_ok(t *testing.T) {
+	tv := SoftwareIdentity{
+		TagID:           *NewTagID("f432dc99-2e06-434d-b9ad-2b22e35b6fa4"),
+		SoftwareName:    "Roadrunner software bundle",
+		SoftwareVersion: "1.0.0",
+		Entities: Entities{
+			makeACMEEntityWithRoles(t,
+				RoleTagCreator,
+				RoleSoftwareCreator,
+			),
+		},
+		Links: &Links{
+			Link{
+				Href: "d84fb5e2-d198-49b4-9d65-3a82421bf180",
+				Rel:  *NewRel(RelParent),
+			},
+		},
+	}
+
+	actualCBOR, err := tv.ToCBOR()
+	assert.NoError(t, err)
+	assert.Equal(t, testCBOR, actualCBOR)
+
+	actualJSON, err := tv.ToJSON()
+	assert.NoError(t, err)
+	assert.JSONEq(t, string(testJSON), string(actualJSON))
+
+	actualXML, err := tv.ToXML()
+	assert.NoError(t, err)
+	assert.Equal(t, testXML, actualXML)
 }
 
 func TestTag_RoundtripPSABundle(t *testing.T) {
@@ -146,111 +306,6 @@ func TestTag_RoundtripPSABundle(t *testing.T) {
 		0x35, 0x30, 0x36, 0x2d, 0x30, 0x37, 0x30, 0x38, 0x2d, 0x30, 0x39, 0x30,
 		0x61, 0x2d, 0x30, 0x62, 0x30, 0x63, 0x30, 0x64, 0x30, 0x65, 0x30, 0x66,
 		0x31, 0x30, 0x18, 0x28, 0x02,
-	}
-
-	roundTripper(t, tv, expectedCBOR)
-}
-
-func TestTag_RoundtripPSAComponent(t *testing.T) {
-	tv := SoftwareIdentity{
-		TagID:           *NewTagID("example.acme.roadrunner-sw-bl-v1-0-0"),
-		SoftwareName:    "Roadrunner boot loader",
-		SoftwareVersion: "1.0.0",
-		Entities: Entities{
-			makeACMEEntityWithRoles(t,
-				RoleTagCreator,
-				RoleAggregator,
-			),
-		},
-		Payload: &Payload{
-			ResourceCollection: ResourceCollection{
-				Resources: &Resources{
-					Resource{
-						Type: ResourceTypePSAMeasuredSoftwareComponent,
-						ResourceExtension: ResourceExtension{
-							PSAMeasuredSoftwareComponent{
-								MeasurementValue: HashEntry{
-									HashAlgID: 1, // sha-256
-									HashValue: []byte("aabb...eeff"),
-								},
-								SignerID: HashEntry{
-									HashAlgID: 1, // sha-256
-									HashValue: []byte("5192...1234"),
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-	/*
-		a6                                      # map(6)
-		   00                                   # unsigned(0)
-		   78 24                                # text(36)
-		      6578616d706c652e61636d652e726f616472756e6e65722d73772d626c2d76312d302d30 # "example.acme.roadrunner-sw-bl-v1-0-0"
-		   0c                                   # unsigned(12)
-		   00                                   # unsigned(0)
-		   01                                   # unsigned(1)
-		   76                                   # text(22)
-		      526f616472756e6e657220626f6f74206c6f61646572 # "Roadrunner boot loader"
-		   0d                                   # unsigned(13)
-		   65                                   # text(5)
-		      312e302e30                        # "1.0.0"
-		   02                                   # unsigned(2)
-		   a3                                   # map(3)
-		      18 1f                             # unsigned(31)
-		      68                                # text(8)
-		         41434d45204c7464               # "ACME Ltd"
-		      18 20                             # unsigned(32)
-		      6c                                # text(12)
-		         61636d652e6578616d706c65       # "acme.example"
-		      18 21                             # unsigned(33)
-		      82                                # array(2)
-		         01                             # unsigned(1)
-		         03                             # unsigned(3)
-		   06                                   # unsigned(6)
-		   a1                                   # map(1)
-		      13                                # unsigned(19)
-		      a3                                # map(3)
-		         18 1d                          # unsigned(29)
-		         78 24                          # text(36)
-		            61726d2e636f6d2d5053414d65617375726564536f667477617265436f6d706f6e656e74 # "arm.com-PSAMeasuredSoftwareComponent"
-		         78 1b                          # text(27)
-		            61726d2e636f6d2d5053414d6561737572656d656e7456616c7565 # "arm.com-PSAMeasurementValue"
-		         82                             # array(2)
-		            01                          # unsigned(1)
-		            4b                          # bytes(11)
-		               616162622e2e2e65656666   # "aabb...eeff"
-		         73                             # text(19)
-		            61726d2e636f6d2d5053415369676e65724964 # "arm.com-PSASignerId"
-		         82                             # array(2)
-		            01                          # unsigned(1)
-		            4b                          # bytes(11)
-		               353139322e2e2e31323334   # "5192...1234"
-	*/
-	expectedCBOR := []byte{
-		0xa6, 0x00, 0x78, 0x24, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65,
-		0x2e, 0x61, 0x63, 0x6d, 0x65, 0x2e, 0x72, 0x6f, 0x61, 0x64, 0x72,
-		0x75, 0x6e, 0x6e, 0x65, 0x72, 0x2d, 0x73, 0x77, 0x2d, 0x62, 0x6c,
-		0x2d, 0x76, 0x31, 0x2d, 0x30, 0x2d, 0x30, 0x0c, 0x00, 0x01, 0x76,
-		0x52, 0x6f, 0x61, 0x64, 0x72, 0x75, 0x6e, 0x6e, 0x65, 0x72, 0x20,
-		0x62, 0x6f, 0x6f, 0x74, 0x20, 0x6c, 0x6f, 0x61, 0x64, 0x65, 0x72,
-		0x0d, 0x65, 0x31, 0x2e, 0x30, 0x2e, 0x30, 0x02, 0xa3, 0x18, 0x1f,
-		0x68, 0x41, 0x43, 0x4d, 0x45, 0x20, 0x4c, 0x74, 0x64, 0x18, 0x20,
-		0x6c, 0x61, 0x63, 0x6d, 0x65, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70,
-		0x6c, 0x65, 0x18, 0x21, 0x82, 0x01, 0x03, 0x06, 0xa1, 0x13, 0xa3,
-		0x18, 0x1d, 0x78, 0x24, 0x61, 0x72, 0x6d, 0x2e, 0x63, 0x6f, 0x6d,
-		0x2d, 0x50, 0x53, 0x41, 0x4d, 0x65, 0x61, 0x73, 0x75, 0x72, 0x65,
-		0x64, 0x53, 0x6f, 0x66, 0x74, 0x77, 0x61, 0x72, 0x65, 0x43, 0x6f,
-		0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x78, 0x1b, 0x61, 0x72,
-		0x6d, 0x2e, 0x63, 0x6f, 0x6d, 0x2d, 0x50, 0x53, 0x41, 0x4d, 0x65,
-		0x61, 0x73, 0x75, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x56, 0x61,
-		0x6c, 0x75, 0x65, 0x82, 0x01, 0x4b, 0x61, 0x61, 0x62, 0x62, 0x2e,
-		0x2e, 0x2e, 0x65, 0x65, 0x66, 0x66, 0x73, 0x61, 0x72, 0x6d, 0x2e,
-		0x63, 0x6f, 0x6d, 0x2d, 0x50, 0x53, 0x41, 0x53, 0x69, 0x67, 0x6e,
-		0x65, 0x72, 0x49, 0x64, 0x82, 0x01, 0x4b, 0x35, 0x31, 0x39, 0x32,
-		0x2e, 0x2e, 0x2e, 0x31, 0x32, 0x33, 0x34,
 	}
 
 	roundTripper(t, tv, expectedCBOR)

@@ -5,7 +5,7 @@ package swid
 
 // Resource models a resource-entry
 type Resource struct {
+	ResourceExtension
 	GlobalAttributes
 	Type string `cbor:"29,keyasint" json:"type" xml:"type,attr"`
-	ResourceExtension
 }
