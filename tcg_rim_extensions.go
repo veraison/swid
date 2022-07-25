@@ -3,6 +3,8 @@
 
 package swid
 
+// See https://github.com/sacmwg/draft-ietf-sacm-coswid/blob/master/concise-swid-rim-extension.cddl
+
 type AnyURI string
 
 type TcgRimReferenceMeasurementEntry struct {
