@@ -176,6 +176,16 @@ func (h *HashEntry) codify(v string) error {
 	return nil
 }
 
+// AlgIDToString provides a conversion from the algorithm ID to the string
+// representation of the algorithm
+func (h *HashEntry) AlgIDToString() string {
+	sAlg, ok := algToString[h.HashAlgID]
+	if !ok {
+		return fmt.Sprintf("alg-id(%d)", h.HashAlgID)
+	}
+	return sAlg
+}
+
 // MarshalJSON provides the custom JSON marshaler for the HashEntry type
 func (h HashEntry) MarshalJSON() ([]byte, error) {
 	s, err := h.stringify()
