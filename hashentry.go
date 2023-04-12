@@ -176,6 +176,14 @@ func (h *HashEntry) codify(v string) error {
 	return nil
 }
 
+func (h *HashEntry) AlgIDToString() (string, error) {
+	sAlg, ok := algToString[h.HashAlgID]
+	if !ok {
+		return "", fmt.Errorf("unknown hash algorithm ID %d", h.HashAlgID)
+	}
+	return sAlg, nil
+}
+
 // MarshalJSON provides the custom JSON marshaler for the HashEntry type
 func (h HashEntry) MarshalJSON() ([]byte, error) {
 	s, err := h.stringify()

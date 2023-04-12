@@ -172,6 +172,45 @@ func TestHashEntry_MarshalJSON(t *testing.T) {
 	}
 }
 
+func TestHashEntry_AlgIDToString(t *testing.T) {
+	tests := []struct {
+		name        string
+		testVector  HashEntry
+		expected    string
+		expectedErr error
+	}{
+		{
+			name: "good stuff",
+			testVector: HashEntry{
+				HashAlgID: 1,
+				HashValue: []byte{0xde, 0xad, 0xbe, 0xef},
+			},
+			expected:    "sha-256",
+			expectedErr: nil,
+		},
+		{
+			name: "unknown hash algo",
+			testVector: HashEntry{
+				HashAlgID: 1000,
+				HashValue: []byte{0xde, 0xad, 0xbe, 0xef},
+			},
+			expected:    `__ignored__`,
+			expectedErr: errors.New("unknown hash algorithm ID 1000"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			u := test.testVector
+			actual, err := u.AlgIDToString()
+			assert.Equal(t, test.expectedErr, err)
+			if test.expectedErr == nil {
+				assert.Equal(t, test.expected, actual)
+			}
+		})
+	}
+}
+
 func TestHashEntry_Set_OK(t *testing.T) {
 	tvs := []struct {
 		alg uint64
