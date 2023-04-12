@@ -13,7 +13,7 @@ jobs:
     - name: Install golangci-lint 
       run: |
         go version
-        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.46.2
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2
     - name: Run required linters in .golangci.yml plus hard-coded ones here
       run: $(go env GOPATH)/bin/golangci-lint run --timeout=3m
     - name: Run optional linters (not required to pass)

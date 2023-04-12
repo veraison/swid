@@ -14,7 +14,7 @@ we follow the Postel principle: refusing to encode unknown protocol entities,
 while accepting unknown values - provided they fit the underlying type
 system.
 
-Creating Tags
+# Creating Tags
 
 A tag can be created with a call to NewTag() specifying a tag ID,
 the name of the software being described and its version:
@@ -84,8 +84,7 @@ JSON marshalers:
 
 	data, err := tag.ToXML() // or tag.ToCBOR(), or tag.ToJSON()
 
-
-Consuming Tags
+# Consuming Tags
 
 A tag can be de-serialized using one of the "From" interfaces. For example,
 to decode a CoSWID tag from a memory buffer:
