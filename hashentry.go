@@ -139,24 +139,31 @@ func (h HashEntry) stringify() (string, error) {
 		return "", fmt.Errorf("empty hash value")
 	}
 
-	s := sAlg + ":" + sVal
+	s := sAlg + ";" + sVal
 
 	return s, nil
 }
 
 func (h *HashEntry) codify(v string) error {
-	// expected format is <hash-alg-string>:<hash-value>
-	s := strings.Split(v, ":")
+	// expected format is <hash-alg-string>;<hash-value>
+	s := strings.Split(v, ";")
 
 	if len(s) != 2 {
-		return fmt.Errorf("bad format: expecting <hash-alg-string>:<hash-value>")
+		// Legacy: previously, colon was used as a separator before
+		// switching to the semicolon (in alignment with RFC6920). This
+		// ensures old serializations can still be parsed.
+		s = strings.Split(v, ":")
+	}
+
+	if len(s) != 2 {
+		return fmt.Errorf("bad format: expecting <hash-alg-string>;<hash-value>")
 	}
 
 	sAlg := strings.TrimSpace(s[0])
 	sVal := strings.TrimSpace(s[1])
 
 	if sAlg == "" || sVal == "" {
-		return fmt.Errorf("bad format: expecting <hash-alg-string>:<hash-value>")
+		return fmt.Errorf("bad format: expecting <hash-alg-string>;<hash-value>")
 	}
 
 	algID, ok := stringToAlg[strings.ToLower(sAlg)]
