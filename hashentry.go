@@ -150,13 +150,29 @@ func ValidHashEntry(algID uint64, value []byte) error {
 	return nil
 }
 
+// String returns a string representation of the HashEntry. The representation
+// consists of the algorithm name and the base64-encoded hash value separated by
+// a semicolon.
+func (h HashEntry) String() string {
+	sAlg, ok := algToString[h.HashAlgID]
+	if !ok {
+		sAlg = "unknown-alg"
+	}
+
+	sVal := base64.StdEncoding.EncodeToString(h.HashValue)
+	if len(sVal) == 0 {
+		sVal = "<empty>"
+	}
+
+	return sAlg + ";" + sVal
+}
+
 func (h HashEntry) stringify() (string, error) {
 	sAlg, ok := algToString[h.HashAlgID]
 	if !ok {
 		return "", fmt.Errorf("unknown hash algorithm ID %d", h.HashAlgID)
 	}
 
-	//sVal := hex.EncodeToString(h.HashValue)
 	sVal := base64.StdEncoding.EncodeToString(h.HashValue)
 	if len(sVal) == 0 {
 		return "", fmt.Errorf("empty hash value")

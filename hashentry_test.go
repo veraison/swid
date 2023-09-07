@@ -277,6 +277,31 @@ func TestHashEntry_Set_OK(t *testing.T) {
 	}
 }
 
+func TestHashEntry_String(t *testing.T) {
+	for _, tv := range []struct {
+		In       HashEntry
+		Expected string
+	}{
+		{
+			In: HashEntry{
+				HashAlgID: 1,
+				HashValue: []byte{0xde, 0xad, 0xbe, 0xef},
+			},
+			Expected: "sha-256;3q2+7w==",
+		},
+		{
+			In: HashEntry{
+				HashAlgID: 1337,
+				HashValue: nil,
+			},
+			Expected: "unknown-alg;<empty>",
+		},
+	} {
+		ret := tv.In.String()
+		assert.Equal(t, tv.Expected, ret)
+	}
+}
+
 func TestHashEntry_Set_mismatched_input(t *testing.T) {
 	tvs := []struct {
 		alg uint64
