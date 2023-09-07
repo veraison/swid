@@ -23,6 +23,17 @@ func TestHashEntry_UnmarshalJSON(t *testing.T) {
 		{
 			name: "good stuff",
 			testVector: TestVector{
+				val: `"sha-256;3q2+7w=="`,
+			},
+			expected: HashEntry{
+				HashAlgID: 1,
+				HashValue: []byte{0xde, 0xad, 0xbe, 0xef},
+			},
+			expectedErr: "",
+		},
+		{
+			name: "good stuff (legacy)",
+			testVector: TestVector{
 				val: `"sha-256:3q2+7w=="`,
 			},
 			expected: HashEntry{
@@ -34,7 +45,7 @@ func TestHashEntry_UnmarshalJSON(t *testing.T) {
 		{
 			name: "no match for alg",
 			testVector: TestVector{
-				val: `"sha0-512:3q2+7w=="`,
+				val: `"sha0-512;3q2+7w=="`,
 			},
 			expected:    HashEntry{},
 			expectedErr: "unknown hash algorithm sha0-512",
@@ -45,51 +56,51 @@ func TestHashEntry_UnmarshalJSON(t *testing.T) {
 				val: `""`,
 			},
 			expected:    HashEntry{},
-			expectedErr: "bad format: expecting <hash-alg-string>:<hash-value>",
+			expectedErr: "bad format: expecting <hash-alg-string>;<hash-value>",
 		},
 		{
 			name: "empty algo and hash value",
 			testVector: TestVector{
-				val: `":"`,
+				val: `";"`,
 			},
 			expected:    HashEntry{},
-			expectedErr: "bad format: expecting <hash-alg-string>:<hash-value>",
+			expectedErr: "bad format: expecting <hash-alg-string>;<hash-value>",
 		},
 		{
 			name: "whitespaces",
 			testVector: TestVector{
-				val: `" : "`,
+				val: `" ; "`,
 			},
 			expected:    HashEntry{},
-			expectedErr: "bad format: expecting <hash-alg-string>:<hash-value>",
+			expectedErr: "bad format: expecting <hash-alg-string>;<hash-value>",
 		}, {
 			name: "excess material",
 			testVector: TestVector{
-				val: `"sha-256:3q2+7w==:EXCESS MATERIAL"`,
+				val: `"sha-256;3q2+7w==;EXCESS MATERIAL"`,
 			},
 			expected:    HashEntry{},
-			expectedErr: "bad format: expecting <hash-alg-string>:<hash-value>",
+			expectedErr: "bad format: expecting <hash-alg-string>;<hash-value>",
 		},
 		{
 			name: "missing algo",
 			testVector: TestVector{
-				val: `":3q2+7w=="`,
+				val: `";3q2+7w=="`,
 			},
 			expected:    HashEntry{},
-			expectedErr: "bad format: expecting <hash-alg-string>:<hash-value>",
+			expectedErr: "bad format: expecting <hash-alg-string>;<hash-value>",
 		},
 		{
 			name: "missing hash value",
 			testVector: TestVector{
-				val: `"sha-256:"`,
+				val: `"sha-256;"`,
 			},
 			expected:    HashEntry{},
-			expectedErr: "bad format: expecting <hash-alg-string>:<hash-value>",
+			expectedErr: "bad format: expecting <hash-alg-string>;<hash-value>",
 		},
 		{
 			name: "corrupt base64 for value",
 			testVector: TestVector{
-				val: `"sha-256:....Caligula...."`,
+				val: `"sha-256;....Caligula...."`,
 			},
 			expected:    HashEntry{},
 			expectedErr: "illegal base64 data at input byte 0",
@@ -137,7 +148,7 @@ func TestHashEntry_MarshalJSON(t *testing.T) {
 				HashAlgID: 6,
 				HashValue: []byte{0xde, 0xad, 0xbe, 0xef},
 			},
-			expected:    `"sha-256-32:3q2+7w=="`,
+			expected:    `"sha-256-32;3q2+7w=="`,
 			expectedErr: nil,
 		},
 		{
