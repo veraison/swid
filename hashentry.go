@@ -107,6 +107,29 @@ func (h *HashEntry) Set(algID uint64, value []byte) error {
 	return nil
 }
 
+// AlgIDFromString converts a string algorithm name to the corresponding uint64
+// algoirthm ID. If the name does not correspond to a known algorithm, 0 is
+// returned.
+func AlgIDFromString(name string) uint64 {
+	alg, ok := stringToAlg[name]
+	if !ok {
+		return 0
+	}
+
+	return alg
+}
+
+// ParseHashEntry parses a string representation (e.g as produced when
+// marshaled to JSON) into a HashEntry.
+func ParseHashEntry(v string) (HashEntry, error) {
+	var he HashEntry
+	if err := he.codify(v); err != nil {
+		return HashEntry{}, err
+	}
+
+	return he, nil
+}
+
 // ValidHashEntry checks whether the supplied algorithm identifier and hash
 // value are a coherent pair
 func ValidHashEntry(algID uint64, value []byte) error {

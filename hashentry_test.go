@@ -356,3 +356,66 @@ func TestHashEntry_ValidHashEntry_unknown_algo(t *testing.T) {
 	err := ValidHashEntry(unknownAlgID, []byte{})
 	assert.EqualError(t, err, "unknown hash algorithm 0")
 }
+
+func TestParseHashEntry(t *testing.T) {
+	for _, tv := range []struct {
+		In          string
+		Expected    HashEntry
+		ExpectedErr string
+	}{
+		{
+			In: "sha-256;3q2+7w==",
+			Expected: HashEntry{
+				HashAlgID: Sha256,
+				HashValue: []byte{0xde, 0xad, 0xbe, 0xef},
+			},
+			ExpectedErr: "",
+		},
+		{
+			In:          "",
+			Expected:    HashEntry{},
+			ExpectedErr: "bad format: expecting <hash-alg-string>;<hash-value>",
+		},
+		{
+			In:          "sha-256;@@@@",
+			Expected:    HashEntry{},
+			ExpectedErr: "illegal base64 data at input byte 0",
+		},
+		{
+			In:          "XXXX;3q2+7w==",
+			Expected:    HashEntry{},
+			ExpectedErr: "unknown hash algorithm XXXX",
+		},
+	} {
+		ret, err := ParseHashEntry(tv.In)
+		if err == nil {
+			assert.Equal(t, tv.Expected, ret)
+
+		} else {
+			assert.EqualError(t, err, tv.ExpectedErr)
+		}
+	}
+}
+
+func TestAlgFromString(t *testing.T) {
+	for _, tv := range []struct {
+		In       string
+		Expected uint64
+	}{
+		{
+			In:       "sha-256",
+			Expected: 1,
+		},
+		{
+			In:       "foo",
+			Expected: 0,
+		},
+		{
+			In:       "SHA-256",
+			Expected: 0,
+		},
+	} {
+		ret := AlgIDFromString(tv.In)
+		assert.Equal(t, tv.Expected, ret)
+	}
+}
