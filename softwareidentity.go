@@ -13,8 +13,6 @@ import (
 type SoftwareIdentity struct {
 	XMLName xml.Name `cbor:"-" json:"-"`
 
-	CoSWIDExtension
-
 	GlobalAttributes
 
 	// A 16 byte binary string or textual identifier uniquely referencing a
@@ -134,6 +132,8 @@ type SoftwareIdentity struct {
 	// In either case, a CoSWID tag can be created by the tool performing an
 	// analysis of the software components installed on the endpoint.
 	Evidence *Evidence `cbor:"3,keyasint,omitempty" json:"evidence,omitempty" xml:"Evidence,omitempty"`
+
+	CoSWIDExtension
 }
 
 // NewTag instantiates a new SWID tag with the supplied tag identifier and

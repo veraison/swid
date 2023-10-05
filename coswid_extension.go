@@ -5,5 +5,5 @@ package swid
 
 // CoSWIDExtension is a placeholder for $$coswid-extension
 type CoSWIDExtension struct {
-	// no coswid-extension defined
+	TcgRimReferenceMeasurementEntry *TcgRimReferenceMeasurementEntry `cbor:"58,keyasint,omitempty" json:"tcg-rim:reference-measurement-entry,omitempty" xml:"-"`
 }

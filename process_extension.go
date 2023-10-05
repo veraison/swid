@@ -5,5 +5,6 @@ package swid
 
 // ProcessExtension is a placeholder for $$process-extension
 type ProcessExtension struct {
-	// no process-extension defined
+	// TCG RIM extension
+	TCGRIMHashEntry *HashEntry `cbor:"7,keyasint,omitempty" json:"tgc-rim:hash-entry,omitempty" xml:"-"`
 }
