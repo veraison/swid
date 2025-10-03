@@ -1,4 +1,4 @@
-// Copyright 2020 Contributors to the Veraison project.
+// Copyright 2020-2025 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
 package swid
@@ -7,14 +7,20 @@ import (
 	"encoding/xml"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestTagID_NewFromUUIDString(t *testing.T) {
-	tv := "00010001-0001-0001-0001-000100010001"
+const (
+	testUUIDString  = "00010001-0001-0001-0001-000100010001"
+	testTagIDString = "example.acme.roadrunner-sw-v1-0-0"
+)
 
-	expected := "00010001-0001-0001-0001-000100010001"
+func TestTagID_NewFromUUIDString(t *testing.T) {
+	tv := testUUIDString
+
+	expected := testUUIDString
 
 	actual := NewTagID(tv)
 
@@ -36,7 +42,7 @@ func TestTagID_16Bytes(t *testing.T) {
 		0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01,
 	}
 
-	expected := "00010001-0001-0001-0001-000100010001"
+	expected := testUUIDString
 
 	actual := NewTagID(tv)
 
@@ -68,7 +74,7 @@ func TestTagID_17Bytes(t *testing.T) {
 }
 
 func TestTagID_String(t *testing.T) {
-	tv := "example.acme.roadrunner-sw-v1-0-0"
+	tv := testTagIDString
 
 	actual := NewTagID(tv)
 
@@ -108,7 +114,7 @@ func TestTagID_UnmarshalXMLAttrString_empty(t *testing.T) {
 }
 
 func TestTagID_UnmarshalXMLAttrString(t *testing.T) {
-	v := "example.acme.roadrunner-sw-v1-0-0"
+	v := testTagIDString
 
 	tv := xml.Attr{
 		Name:  xml.Name{Local: "tagId"},
@@ -127,7 +133,7 @@ func TestTagID_UnmarshalXMLAttrString(t *testing.T) {
 }
 
 func TestTagID_MarshalXMLAttrString(t *testing.T) {
-	v := "example.acme.roadrunner-sw-v1-0-0"
+	v := testTagIDString
 
 	tv := NewTagID(v)
 	require.NotNil(t, tv)
@@ -152,7 +158,7 @@ func TestTagID_MarshalXMLAttrBytes(t *testing.T) {
 	tv := NewTagID(v)
 	require.NotNil(t, tv)
 
-	expected := "00010001-0001-0001-0001-000100010001"
+	expected := testUUIDString
 
 	actual, err := tv.MarshalXMLAttr(xml.Name{Local: "tagId"})
 
@@ -169,7 +175,7 @@ func TestTagID_MarshalJSONBytes(t *testing.T) {
 	tv := NewTagID(v)
 	require.NotNil(t, tv)
 
-	expected := `"00010001-0001-0001-0001-000100010001"`
+	expected := `"` + testUUIDString + `"`
 
 	actual, err := tv.MarshalJSON()
 
@@ -235,4 +241,64 @@ func TestTagID_UnmarshalCBOR_empty_bytes(t *testing.T) {
 	err := actual.UnmarshalCBOR(tv)
 
 	assert.EqualError(t, err, expectedErr)
+}
+
+func TestTagID_Valid_nil_value(t *testing.T) {
+	tagID := TagID{val: nil}
+
+	err := tagID.Valid()
+
+	assert.EqualError(t, err, "tag-id value is nil")
+}
+
+func TestTagID_Valid_empty_string(t *testing.T) {
+	tagID := TagID{val: ""}
+
+	err := tagID.Valid()
+
+	assert.EqualError(t, err, "tag-id string value is empty")
+}
+
+func TestTagID_Valid_valid_string(t *testing.T) {
+	tagID := TagID{val: "com.acme.rrd-2013"}
+
+	err := tagID.Valid()
+
+	assert.NoError(t, err)
+}
+
+func TestTagID_Valid_nil_uuid(t *testing.T) {
+	tagID := TagID{val: uuid.Nil}
+
+	err := tagID.Valid()
+
+	assert.EqualError(t, err, "tag-id UUID value is nil UUID")
+}
+
+func TestTagID_Valid_valid_uuid(t *testing.T) {
+	// Use a proper RFC4122 UUID (version 4)
+	validUUID := uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
+	tagID := TagID{val: validUUID}
+
+	err := tagID.Valid()
+
+	assert.NoError(t, err)
+}
+
+func TestTagID_Valid_invalid_uuid_variant(t *testing.T) {
+	// Create a UUID with an invalid variant (non-RFC4122)
+	invalidVariantUUID := uuid.UUID{0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01}
+	tagID := TagID{val: invalidVariantUUID}
+
+	err := tagID.Valid()
+
+	assert.Contains(t, err.Error(), "tag-id UUID expecting RFC4122 variant")
+}
+
+func TestTagID_Valid_invalid_type(t *testing.T) {
+	tagID := TagID{val: 123}
+
+	err := tagID.Valid()
+
+	assert.EqualError(t, err, "tag-id value must be string or uuid.UUID, got int")
 }

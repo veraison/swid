@@ -1,4 +1,4 @@
-// Copyright 2020 Contributors to the Veraison project.
+// Copyright 2020-2025 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
 package swid
@@ -27,6 +27,7 @@ func (p *Payload) AddDirectory(d Directory) error {
 	return nil
 }
 
+// AddFile adds a File to the Payload
 func (p *Payload) AddFile(f File) error {
 	if p.Files == nil {
 		p.Files = new(Files)

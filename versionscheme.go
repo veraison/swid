@@ -1,4 +1,4 @@
-// Copyright 2020 Contributors to the Veraison project.
+// Copyright 2020-2025 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
 package swid
@@ -100,6 +100,7 @@ func (vs *VersionScheme) UnmarshalXMLAttr(attr xml.Attr) error {
 	return xmlAttrToCode(attr, stringToVersionScheme, &vs.val)
 }
 
+// SetCode sets the version scheme code if it is a known value
 func (vs *VersionScheme) SetCode(v int64) error {
 	if _, ok := versionSchemeToString[v]; ok {
 		vs.val = v

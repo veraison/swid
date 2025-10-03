@@ -1,10 +1,12 @@
-// Copyright 2020 Contributors to the Veraison project.
+// Copyright 2020-2025 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
 package swid
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -91,4 +93,85 @@ func TestFile_RoundtripMinset(t *testing.T) {
 	}
 
 	roundTripper(t, tv, expectedCBOR)
+}
+
+func TestFile_Valid_valid_file(t *testing.T) {
+	file := testFileMinSet
+
+	err := file.Valid()
+
+	assert.NoError(t, err)
+}
+
+func TestFile_Valid_empty_fs_name(t *testing.T) {
+	file := File{
+		FileSystemItem: FileSystemItem{
+			Location: "bin/",
+			FsName:   "", // empty fs-name
+		},
+	}
+
+	err := file.Valid()
+
+	assert.EqualError(t, err, "file fs-name is empty")
+}
+
+func TestFile_Valid_with_valid_hash(t *testing.T) {
+	file := File{
+		FileSystemItem: FileSystemItem{
+			FsName: "test.exe",
+		},
+		Hash: &HashEntry{
+			HashAlgID: Sha256,
+			HashValue: make([]byte, 32), // valid 32-byte hash for SHA-256
+		},
+	}
+
+	err := file.Valid()
+
+	assert.NoError(t, err)
+}
+
+func TestFile_Valid_with_invalid_hash(t *testing.T) {
+	file := File{
+		FileSystemItem: FileSystemItem{
+			FsName: "test.exe",
+		},
+		Hash: &HashEntry{
+			HashAlgID: Sha256,
+			HashValue: make([]byte, 16), // invalid 16-byte hash for SHA-256 (should be 32)
+		},
+	}
+
+	err := file.Valid()
+
+	assert.Contains(t, err.Error(), "length mismatch for hash algorithm")
+}
+
+func TestFile_Valid_with_negative_size(t *testing.T) {
+	negativeSize := int64(-1)
+	file := File{
+		FileSystemItem: FileSystemItem{
+			FsName: "test.exe",
+		},
+		Size: &negativeSize,
+	}
+
+	err := file.Valid()
+
+	assert.EqualError(t, err, "file size cannot be negative")
+}
+
+func TestFile_Valid_with_valid_size(t *testing.T) {
+	validSize := int64(1024)
+	file := File{
+		FileSystemItem: FileSystemItem{
+			FsName: "test.exe",
+		},
+		Size: &validSize,
+	}
+
+	err := file.Valid()
+
+	assert.NoError(t, err)
 }

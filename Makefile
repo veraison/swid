@@ -12,7 +12,7 @@ ifeq ($(MAKECMDGOALS),lint)
 GOLINT_ARGS ?= run --timeout=3m
 else
   ifeq ($(MAKECMDGOALS),lint-extra)
-  GOLINT_ARGS ?= run --timeout=3m --issues-exit-code=0 -E dupl -E gocritic -E gosimple -E lll -E prealloc
+  GOLINT_ARGS ?= run --timeout=3m --issues-exit-code=0 -E dupl -E gocritic -E lll -E prealloc
   endif
 endif
 

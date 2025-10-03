@@ -1,4 +1,4 @@
-// Copyright 2020 Contributors to the Veraison project.
+// Copyright 2020-2025 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
 package swid
@@ -89,7 +89,7 @@ func (t TagID) String() string {
 	}
 }
 
-// Returns TagID in URI representation according to CoSWID Spec
+// URI returns TagID in URI representation according to CoSWID Spec
 // useful for URI fields like link->href
 func (t TagID) URI() string {
 	switch v := t.val.(type) {
@@ -100,6 +100,32 @@ func (t TagID) URI() string {
 	default:
 		return "unknown type for tag-id"
 	}
+}
+
+// Valid validates the TagID receiver to ensure it has a valid value
+func (t TagID) Valid() error {
+	if t.val == nil {
+		return errors.New("tag-id value is nil")
+	}
+
+	switch v := t.val.(type) {
+	case string:
+		if v == "" {
+			return errors.New("tag-id string value is empty")
+		}
+	case uuid.UUID:
+		if v == uuid.Nil {
+			return errors.New("tag-id UUID value is nil UUID")
+		}
+		// Check UUID variant as per RFC4122
+		if variant := v.Variant(); variant != uuid.RFC4122 {
+			return fmt.Errorf("tag-id UUID expecting RFC4122 variant, got %s instead", variant)
+		}
+	default:
+		return fmt.Errorf("tag-id value must be string or uuid.UUID, got %T", v)
+	}
+
+	return nil
 }
 
 // MarshalXMLAttr encodes the TagID receiver as XML attribute

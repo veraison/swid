@@ -1,9 +1,13 @@
-// Copyright 2020 Contributors to the Veraison project.
+// Copyright 2020-2025 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
 package swid
 
-import "time"
+import (
+	"errors"
+	"fmt"
+	"time"
+)
 
 // Evidence models a evidence-entry
 type Evidence struct {
@@ -50,6 +54,37 @@ func (e *Evidence) AddProcess(p Process) error {
 	}
 
 	*e.Processes = append(*e.Processes, p)
+
+	return nil
+}
+
+// Valid validates the Evidence receiver to ensure it has valid required fields
+func (e Evidence) Valid() error {
+	if e.DeviceID == "" {
+		return errors.New("evidence device-id is empty")
+	}
+
+	if e.Date.IsZero() {
+		return errors.New("evidence date is zero")
+	}
+
+	// Validate Files if present
+	if e.Files != nil {
+		for i, file := range *e.Files {
+			if err := file.Valid(); err != nil {
+				return fmt.Errorf("evidence file[%d] invalid: %w", i, err)
+			}
+		}
+	}
+
+	// Validate Processes if present
+	if e.Processes != nil {
+		for i, process := range *e.Processes {
+			if process.ProcessName == "" {
+				return fmt.Errorf("evidence process[%d] process-name is empty", i)
+			}
+		}
+	}
 
 	return nil
 }
