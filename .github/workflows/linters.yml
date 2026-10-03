@@ -1,23 +1,20 @@
-# Go Linters - GitHub Actions
 name: linters
-on: [push, pull_request]
-jobs:
 
-  # Check linters on latest-ubuntu with default version of Go.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref_name != github.event.repository.default_branch }}
+
+jobs:
   lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/setup-go@v5
-      with:
-        go-version: '1.24'
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Install golangci-lint
-      run: |
-        go version
-        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.5.0
-    - name: Run required linters in .golangci.yml plus hard-coded ones here
-      run: $(go env GOPATH)/bin/golangci-lint run --timeout=3m
-    - name: Run optional linters (not required to pass)
-      run: $(go env GOPATH)/bin/golangci-lint run --timeout=3m --issues-exit-code=0 -E dupl -E gocritic -E lll -E prealloc
+    uses: veraison/ci/.github/workflows/go.yml@main
+    with:
+      jobs: 'lint'
