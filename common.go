@@ -17,63 +17,60 @@ type codeDictionary map[int64]string
 
 type stringDictionary map[string]int64
 
-func stringifyCode(v *interface{}, dict codeDictionary, codeName string) error {
-	switch t := (*v).(type) {
+func stringifyCode(v interface{}, dict codeDictionary, codeName string) (interface{}, error) {
+	switch t := v.(type) {
 	case string:
-		*v = t
-		return nil
+		return t, nil
 	// uint64 is only for compatibility with code that uses this library and used
 	// the uint64 type before (as was default for CoSWID spec v16 and earlier)
 	case uint64:
 		if t > math.MaxInt64 {
-			return fmt.Errorf("%s should never be above max of int64", codeName)
+			return nil, fmt.Errorf("%s should never be above max of int64", codeName)
 		}
 		if s, ok := dict[int64(t)]; ok {
-			*v = s
+			return s, nil
 		} else if codeName != "" {
-			*v = fmt.Sprintf("%s(%d)", codeName, t)
+			return fmt.Sprintf("%s(%d)", codeName, t), nil
 		}
-		return nil
+		return v, nil
 	case int64:
 		if s, ok := dict[t]; ok {
-			*v = s
+			return s, nil
 		} else if codeName != "" {
-			*v = fmt.Sprintf("%s(%d)", codeName, t)
+			return fmt.Sprintf("%s(%d)", codeName, t), nil
 		}
-		return nil
+		return v, nil
 	default:
-		return fmt.Errorf("unhandled type: %T", t)
+		return nil, fmt.Errorf("unhandled type: %T", t)
 	}
 }
 
-func codifyString(v *interface{}, dict stringDictionary) error {
-	switch t := (*v).(type) {
+func codifyString(v interface{}, dict stringDictionary) (interface{}, error) {
+	switch t := v.(type) {
 	case string:
 		// try mapping to code and replace if successful
 		if ui, ok := dict[t]; ok {
-			*v = ui
+			return ui, nil
 		}
-		return nil
+		return v, nil
 	// CBOR library returns uint64 type for positive integers, but we need int64
 	// for all types since CoSWID Spec v17
 	case uint64:
 		if t > math.MaxInt64 {
-			return fmt.Errorf("there are no dictionary values above max of int64 in CoSWID")
+			return nil, fmt.Errorf("there are no dictionary values above max of int64 in CoSWID")
 		}
-		*v = int64(t)
-		return nil
+		return int64(t), nil
 	case int64:
-		return nil
+		return v, nil
 	case float64:
 		// check that the JSON number is integer (i.e., no fraction / exponent)
 		// if so, convert and replace
 		if t == float64(int64(t)) {
-			*v = int64(t)
-			return nil
+			return int64(t), nil
 		}
-		return fmt.Errorf("number %s is not int64", strconv.FormatFloat(t, 'f', -1, 64))
+		return nil, fmt.Errorf("number %s is not int64", strconv.FormatFloat(t, 'f', -1, 64))
 	default:
-		return fmt.Errorf("unhandled type: %T", t)
+		return nil, fmt.Errorf("unhandled type: %T", t)
 	}
 }
 
@@ -93,9 +90,8 @@ func isStringOrCode(v interface{}, codeName string) error {
 }
 
 func codeStringer(code interface{}, dict codeDictionary, codeName string) string {
-	v := code
-
-	if err := stringifyCode(&v, dict, codeName); err != nil {
+	v, err := stringifyCode(code, dict, codeName)
+	if err != nil {
 		return ""
 	}
 
@@ -103,10 +99,9 @@ func codeStringer(code interface{}, dict codeDictionary, codeName string) string
 }
 
 func codeToCBOR(code interface{}, dict stringDictionary) ([]byte, error) {
-	v := code
-
 	// always try to minimize bandwidth
-	if err := codifyString(&v, dict); err != nil {
+	v, err := codifyString(code, dict)
+	if err != nil {
 		return nil, err
 	}
 
@@ -114,11 +109,10 @@ func codeToCBOR(code interface{}, dict stringDictionary) ([]byte, error) {
 }
 
 func codeToJSON(code interface{}, dict codeDictionary) ([]byte, error) {
-	v := code // make a copy we can clobber
-
 	// always try to maximize expressiveness
 	// however, avoid encoding unknown codes
-	if err := stringifyCode(&v, dict, ""); err != nil {
+	v, err := stringifyCode(code, dict, "")
+	if err != nil {
 		return nil, err
 	}
 
@@ -126,11 +120,10 @@ func codeToJSON(code interface{}, dict codeDictionary) ([]byte, error) {
 }
 
 func codeToXMLAttr(attrName xml.Name, code interface{}, dict codeDictionary) (xml.Attr, error) {
-	v := code // make a copy we can clobber
-
 	// always try to maximize expressiveness
 	// however, avoid encoding unknown codes
-	if err := stringifyCode(&v, dict, ""); err != nil {
+	v, err := stringifyCode(code, dict, "")
+	if err != nil {
 		return xml.Attr{}, err
 	}
 
@@ -139,35 +132,27 @@ func codeToXMLAttr(attrName xml.Name, code interface{}, dict codeDictionary) (xm
 
 type encoder func([]byte, interface{}) error
 
-func xToCode(enc encoder, from []byte, dict stringDictionary, to *interface{}) error {
-	if err := enc(from, to); err != nil {
-		return err
+func xToCode(enc encoder, from []byte, dict stringDictionary) (interface{}, error) {
+	var v interface{}
+
+	if err := enc(from, &v); err != nil {
+		return nil, err
 	}
 
 	// try to make internal representation as homogeneous as possible
-	if err := codifyString(to, dict); err != nil {
-		return err
-	}
-
-	return nil
+	return codifyString(v, dict)
 }
 
-func cborToCode(from []byte, dict stringDictionary, to *interface{}) error {
-	return xToCode(dm.Unmarshal, from, dict, to)
+func cborToCode(from []byte, dict stringDictionary) (interface{}, error) {
+	return xToCode(dm.Unmarshal, from, dict)
 }
 
-func jsonToCode(from []byte, dict stringDictionary, to *interface{}) error {
-	return xToCode(json.Unmarshal, from, dict, to)
+func jsonToCode(from []byte, dict stringDictionary) (interface{}, error) {
+	return xToCode(json.Unmarshal, from, dict)
 }
 
-func xmlAttrToCode(from xml.Attr, dict stringDictionary, to *interface{}) error {
-	*to = from.Value
-
-	if err := codifyString(to, dict); err != nil {
-		return err
-	}
-
-	return nil
+func xmlAttrToCode(from xml.Attr, dict stringDictionary) (interface{}, error) {
+	return codifyString(from.Value, dict)
 }
 
 func arrayToCBOR(a reflect.Value) ([]byte, error) {

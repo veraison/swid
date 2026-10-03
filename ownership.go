@@ -1,6 +1,7 @@
 // Copyright 2020 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
+//nolint:dupl // shared boilerplate
 package swid
 
 import "encoding/xml"
@@ -62,7 +63,14 @@ func (o Ownership) MarshalCBOR() ([]byte, error) {
 // UnmarshalCBOR decodes the supplied data into an Ownership code-point if
 // possible, otherwise as string
 func (o *Ownership) UnmarshalCBOR(data []byte) error {
-	return cborToCode(data, stringToOwnership, &o.val)
+	v, err := cborToCode(data, stringToOwnership)
+	if err != nil {
+		return err
+	}
+
+	o.val = v
+
+	return nil
 }
 
 // MarshalJSON encodes the Ownership receiver as string
@@ -73,7 +81,14 @@ func (o Ownership) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON decodes the supplied data into an Ownership code-point if
 // possible, otherwise as string
 func (o *Ownership) UnmarshalJSON(data []byte) error {
-	return jsonToCode(data, stringToOwnership, &o.val)
+	v, err := jsonToCode(data, stringToOwnership)
+	if err != nil {
+		return err
+	}
+
+	o.val = v
+
+	return nil
 }
 
 // MarshalXMLAttr encodes the Ownership receiver as XML attribute
@@ -84,5 +99,12 @@ func (o Ownership) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 // UnmarshalXMLAttr decodes the supplied XML attribute into an Ownership
 // code-point if possible, otherwise as string
 func (o *Ownership) UnmarshalXMLAttr(attr xml.Attr) error {
-	return xmlAttrToCode(attr, stringToOwnership, &o.val)
+	v, err := xmlAttrToCode(attr, stringToOwnership)
+	if err != nil {
+		return err
+	}
+
+	o.val = v
+
+	return nil
 }

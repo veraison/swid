@@ -184,7 +184,7 @@ func (t *TagID) UnmarshalCBOR(data []byte) error {
 		tagID *TagID
 	)
 
-	if err = cbor.Unmarshal(data, &v); err != nil {
+	if err := cbor.Unmarshal(data, &v); err != nil {
 		return err
 	}
 

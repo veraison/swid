@@ -160,7 +160,7 @@ func (h HashEntry) String() string {
 	}
 
 	sVal := base64.StdEncoding.EncodeToString(h.HashValue)
-	if len(sVal) == 0 {
+	if sVal == "" {
 		sVal = "<empty>"
 	}
 
@@ -174,7 +174,7 @@ func (h HashEntry) stringify() (string, error) {
 	}
 
 	sVal := base64.StdEncoding.EncodeToString(h.HashValue)
-	if len(sVal) == 0 {
+	if sVal == "" {
 		return "", fmt.Errorf("empty hash value")
 	}
 
@@ -210,7 +210,6 @@ func (h *HashEntry) codify(v string) error {
 		return fmt.Errorf("unknown hash algorithm %s", sAlg)
 	}
 
-	//value, err := hex.DecodeString(sVal)
 	value, err := base64.StdEncoding.DecodeString(sVal)
 	if err != nil {
 		return err

@@ -75,7 +75,14 @@ func (vs VersionScheme) MarshalCBOR() ([]byte, error) {
 // UnmarshalCBOR decodes the supplied data into a VersionScheme code-point if
 // possible, otherwise as string
 func (vs *VersionScheme) UnmarshalCBOR(data []byte) error {
-	return cborToCode(data, stringToVersionScheme, &vs.val)
+	v, err := cborToCode(data, stringToVersionScheme)
+	if err != nil {
+		return err
+	}
+
+	vs.val = v
+
+	return nil
 }
 
 // MarshalJSON encodes the VersionScheme receiver as string
@@ -86,7 +93,14 @@ func (vs VersionScheme) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON decodes the supplied data into an VersionScheme code-point if
 // possible, otherwise as string
 func (vs *VersionScheme) UnmarshalJSON(data []byte) error {
-	return jsonToCode(data, stringToVersionScheme, &vs.val)
+	v, err := jsonToCode(data, stringToVersionScheme)
+	if err != nil {
+		return err
+	}
+
+	vs.val = v
+
+	return nil
 }
 
 // MarshalXMLAttr encodes the VersionScheme receiver as XML attribute
@@ -97,7 +111,14 @@ func (vs VersionScheme) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 // UnmarshalXMLAttr decodes the supplied XML attribute into a VersionScheme
 // code-point if possible, otherwise as string
 func (vs *VersionScheme) UnmarshalXMLAttr(attr xml.Attr) error {
-	return xmlAttrToCode(attr, stringToVersionScheme, &vs.val)
+	v, err := xmlAttrToCode(attr, stringToVersionScheme)
+	if err != nil {
+		return err
+	}
+
+	vs.val = v
+
+	return nil
 }
 
 // SetCode sets the version scheme code if it is a known value

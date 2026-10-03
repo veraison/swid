@@ -49,7 +49,7 @@ type SoftwareMeta struct {
 	// A boolean value that can be used to determine if accompanying proof of
 	// entitlement is needed when a software license reconciliation process is
 	// performed.
-	EntitlementDataRequired *bool `cbor:"48,keyasint,omitempty" json:"entitlement-data-required,omitempty" xml:"entitlementDataRequired,attr,omitempty"`
+	EntitlementDataRequired *bool `cbor:"48,keyasint,omitempty" json:"entitlement-data-required,omitempty" xml:"entitlementDataRequired,attr,omitempty"` //nolint:lll
 
 	// A vendor-specific textual key that can be used to identify and establish
 	// a relationship to an entitlement. Examples of an entitlement-key might
