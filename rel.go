@@ -112,7 +112,14 @@ func (r Rel) MarshalCBOR() ([]byte, error) {
 // UnmarshalCBOR decodes the supplied data into a Rel code-point if possible,
 // otherwise as string
 func (r *Rel) UnmarshalCBOR(data []byte) error {
-	return cborToCode(data, stringToRel, &r.val)
+	v, err := cborToCode(data, stringToRel)
+	if err != nil {
+		return err
+	}
+
+	r.val = v
+
+	return nil
 }
 
 // MarshalJSON encodes the Rel receiver as string
@@ -123,7 +130,14 @@ func (r Rel) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON decodes the supplied data into a Rel code-point if possible,
 // otherwise as string
 func (r *Rel) UnmarshalJSON(data []byte) error {
-	return jsonToCode(data, stringToRel, &r.val)
+	v, err := jsonToCode(data, stringToRel)
+	if err != nil {
+		return err
+	}
+
+	r.val = v
+
+	return nil
 }
 
 // MarshalXMLAttr encodes the Rel receiver as XML attribute
@@ -134,5 +148,12 @@ func (r Rel) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 // UnmarshalXMLAttr decodes the supplied XML attribute into a Rel code-point if
 // possible, otherwise as string
 func (r *Rel) UnmarshalXMLAttr(attr xml.Attr) error {
-	return xmlAttrToCode(attr, stringToRel, &r.val)
+	v, err := xmlAttrToCode(attr, stringToRel)
+	if err != nil {
+		return err
+	}
+
+	r.val = v
+
+	return nil
 }

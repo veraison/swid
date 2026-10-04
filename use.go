@@ -1,6 +1,7 @@
 // Copyright 2020 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
+//nolint:dupl // shared boilerplate
 package swid
 
 import "encoding/xml"
@@ -62,7 +63,14 @@ func (u Use) MarshalCBOR() ([]byte, error) {
 // UnmarshalCBOR decodes the supplied data into a Use code-point if
 // possible, otherwise as string
 func (u *Use) UnmarshalCBOR(data []byte) error {
-	return cborToCode(data, stringToUse, &u.val)
+	v, err := cborToCode(data, stringToUse)
+	if err != nil {
+		return err
+	}
+
+	u.val = v
+
+	return nil
 }
 
 // MarshalJSON encodes the Use receiver as string
@@ -73,7 +81,14 @@ func (u Use) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON decodes the supplied data into a Use code-point if
 // possible, otherwise as string
 func (u *Use) UnmarshalJSON(data []byte) error {
-	return jsonToCode(data, stringToUse, &u.val)
+	v, err := jsonToCode(data, stringToUse)
+	if err != nil {
+		return err
+	}
+
+	u.val = v
+
+	return nil
 }
 
 // MarshalXMLAttr encodes the Use receiver as XML attribute
@@ -84,5 +99,12 @@ func (u Use) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 // UnmarshalXMLAttr decodes the supplied XML attribute into a Use
 // code-point if possible, otherwise as string
 func (u *Use) UnmarshalXMLAttr(attr xml.Attr) error {
-	return xmlAttrToCode(attr, stringToUse, &u.val)
+	v, err := xmlAttrToCode(attr, stringToUse)
+	if err != nil {
+		return err
+	}
+
+	u.val = v
+
+	return nil
 }

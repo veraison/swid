@@ -68,8 +68,6 @@ var (
 )
 
 func (r Roles) stringer(skipUnknown bool) string {
-	v := r.val // make a copy that we can clobber
-
 	s := []string{}
 
 	codeName := "role"
@@ -77,12 +75,13 @@ func (r Roles) stringer(skipUnknown bool) string {
 		codeName = ""
 	}
 
-	for i := range v {
-		if err := stringifyCode(&v[i], roleToString, codeName); err != nil {
+	for _, role := range r.val {
+		v, err := stringifyCode(role, roleToString, codeName)
+		if err != nil {
 			continue
 		}
-		// after a successful stringifyCode the type assertion on v[i] is safe
-		s = append(s, v[i].(string))
+		// after a successful stringifyCode the type assertion on v is safe
+		s = append(s, v.(string))
 	}
 
 	return strings.Join(s, " ")
@@ -112,22 +111,22 @@ func (r Roles) Check() error {
 // MarshalJSON provides the custom JSON marshaler for the Roles type
 // that takes care of the $role / [ 2* $role ] variants
 func (r Roles) MarshalJSON() ([]byte, error) {
-	v := r.val // make a copy that we can clobber
+	v := make([]interface{}, len(r.val))
+
+	for i, role := range r.val {
+		s, err := stringifyCode(role, roleToString, "")
+		if err != nil {
+			return nil, err
+		}
+		v[i] = s
+	}
 
 	// handle singleton
 	if len(v) == 1 {
-		if err := stringifyCode(&v[0], roleToString, ""); err != nil {
-			return nil, err
-		}
-		return json.Marshal(&v[0])
+		return json.Marshal(v[0])
 	}
 
 	// handle array
-	for i := range v {
-		if err := stringifyCode(&v[i], roleToString, ""); err != nil {
-			return nil, err
-		}
-	}
 
 	return json.Marshal(v)
 }
@@ -136,9 +135,11 @@ func (r *Roles) postprocess(a []interface{}) error {
 	// 'a' is mostly good already, modulo some type checking and mapping
 	// of strings into codepoints
 	for i := range a {
-		if err := codifyString(&a[i], stringToRole); err != nil {
+		c, err := codifyString(a[i], stringToRole)
+		if err != nil {
 			return err
 		}
+		a[i] = c
 	}
 
 	// at this point we know it is safe to use 'a'
@@ -163,19 +164,18 @@ func (r *Roles) UnmarshalJSON(data []byte) error {
 // MarshalCBOR provides the custom CBOR marshaler for the Roles type
 // that takes care of the $role / [ 2* $role ] variants
 func (r Roles) MarshalCBOR() ([]byte, error) {
-	v := r.val // make a copy that we can clobber
+	v := make([]interface{}, len(r.val))
 
-	if len(v) == 1 {
-		if err := codifyString(&v[0], stringToRole); err != nil {
+	for i, role := range r.val {
+		c, err := codifyString(role, stringToRole)
+		if err != nil {
 			return nil, err
 		}
-		return em.Marshal(&v[0])
+		v[i] = c
 	}
 
-	for i := range v {
-		if err := codifyString(&v[i], stringToRole); err != nil {
-			return nil, err
-		}
+	if len(v) == 1 {
+		return em.Marshal(v[0])
 	}
 
 	return em.Marshal(v)
@@ -235,8 +235,9 @@ func (r Roles) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
 // UnmarshalXMLAttr provides a custom XML attribute unmarshaler for the Roles
 // type
 func (r *Roles) UnmarshalXMLAttr(attr xml.Attr) error {
-	var v []interface{}
-	for _, role := range strings.Fields(attr.Value) {
+	fields := strings.Fields(attr.Value)
+	v := make([]interface{}, 0, len(fields))
+	for _, role := range fields {
 		v = append(v, role)
 	}
 	return r.Set(v...)
