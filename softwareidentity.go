@@ -1,12 +1,14 @@
-// Copyright 2020 Contributors to the Veraison project.
+// Copyright 2020-2026 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
 package swid
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"
 	"errors"
+	"fmt"
 )
 
 // SoftwareIdentity represents the top-level SWID
@@ -74,7 +76,8 @@ type SoftwareIdentity struct {
 	SoftwareName string `cbor:"1,keyasint" json:"software-name" xml:"name,attr"`
 
 	// A textual value representing the specific release or development version
-	// of the software component.
+	// of the software component. If VersionScheme is "binary", this must be
+	// the encoding of the version as base64url without padding.
 	SoftwareVersion string `cbor:"13,keyasint,omitempty" json:"software-version,omitempty" xml:"version,attr"`
 
 	// An integer or textual value representing the versioning scheme used for
@@ -153,6 +156,27 @@ func NewTag(tagID interface{}, softwareName, softwareVersion string) (*SoftwareI
 	}
 
 	return &t, nil
+}
+
+// Check returns nil if the SoftwareIdentity is valid, or an error if it is
+// not.
+func (t SoftwareIdentity) Check() error {
+	if t.VersionScheme != nil {
+		if err := t.VersionScheme.Check(); err != nil {
+			return err
+		}
+
+		if t.VersionScheme.String() == "binary" {
+			if _, err := base64.RawURLEncoding.DecodeString(t.SoftwareVersion); err != nil {
+				return fmt.Errorf(
+					`invalid base64url_nopad in software-version for "binary" version-scheme: %w`,
+					err,
+				)
+			}
+		}
+	}
+
+	return nil
 }
 
 // ToXML serializes the receiver SoftwareIdentity to SWID

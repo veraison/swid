@@ -1,4 +1,4 @@
-// Copyright 2020-2025 Contributors to the Veraison project.
+// Copyright 2020-2026 Contributors to the Veraison project.
 // SPDX-License-Identifier: Apache-2.0
 
 package swid
@@ -33,6 +33,7 @@ const (
 	VersionSchemeMultipartNumericSuffix
 	VersionSchemeAlphaNumeric
 	VersionSchemeDecimal
+	VersionSchemeBinary
 	VersionSchemeSemVer  = 16384
 	VersionSchemeUnknown = ^int64(0)
 )
@@ -43,6 +44,7 @@ var (
 		VersionSchemeMultipartNumericSuffix: "multipartnumeric+suffix",
 		VersionSchemeAlphaNumeric:           "alphanumeric",
 		VersionSchemeDecimal:                "decimal",
+		VersionSchemeBinary:                 "binary",
 		VersionSchemeSemVer:                 "semver",
 	}
 
@@ -51,6 +53,7 @@ var (
 		"multipartnumeric+suffix": VersionSchemeMultipartNumericSuffix,
 		"alphanumeric":            VersionSchemeAlphaNumeric,
 		"decimal":                 VersionSchemeDecimal,
+		"binary":                  VersionSchemeBinary,
 		"semver":                  VersionSchemeSemVer,
 	}
 )

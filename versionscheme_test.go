@@ -42,6 +42,11 @@ func TestVersionScheme_Set(t *testing.T) {
 			expected: nil,
 		},
 		{
+			name:     "known codepoints (6)",
+			tv:       VersionSchemeBinary,
+			expected: nil,
+		},
+		{
 			name:     "unknown codepoint",
 			tv:       19283937,
 			expected: errors.New("unknown version scheme 19283937"),
