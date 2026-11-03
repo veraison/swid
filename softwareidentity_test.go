@@ -310,3 +310,45 @@ func TestTag_RoundtripPSABundle(t *testing.T) {
 
 	roundTripper(t, tv, expectedCBOR)
 }
+
+func TestSoftwareIdentity_Check(t *testing.T) {
+	testCases := []struct {
+		title string
+		value SoftwareIdentity
+		err   string
+	}{
+		{
+			title: "ok",
+			value: SoftwareIdentity{
+				SoftwareVersion: "abcd",
+				VersionScheme: &VersionScheme{VersionSchemeBinary},
+			},
+		},
+		{
+			title: "err bad scheme",
+			value: SoftwareIdentity{
+				VersionScheme: &VersionScheme{true},
+			},
+			err: `version-scheme MUST be int64 or string; got bool`,
+		},
+		{
+			title: "err invalid binary version",
+			value: SoftwareIdentity{
+				SoftwareVersion: "@@@",
+				VersionScheme: &VersionScheme{VersionSchemeBinary},
+			},
+			err: `invalid base64url_nopad in software-version for "binary" version-scheme: illegal base64 data at input byte 0`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.title, func(t *testing.T) {
+			err := tc.value.Check()
+			if tc.err == "" {
+				assert.NoError(t, err)
+			} else {
+				assert.EqualError(t, err, tc.err)
+			}
+		})
+	}
+}
